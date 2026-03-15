@@ -1,0 +1,879 @@
+District Analysis from Database Tables
+======================================
+
+Table: biometric_data (Total Rows: 1,861,093)
+---------------------------------------
+  Unique Districts in biometric_data: 784
+
+Table: demographic_data (Total Rows: 2,071,675)
+-----------------------------------------
+  Unique Districts in demographic_data: 784
+
+Table: enrolment_data (Total Rows: 1,006,007)
+---------------------------------------
+  Unique Districts in enrolment_data: 778
+
+Overall Unique Districts across all tables
+==========================================
+Total Unique State-District Combinations: 788
+
+Andaman and Nicobar Islands (3 districts):
+  - Nicobars
+  - North And Middle Andaman
+  - South Andamans
+
+Andhra Pradesh (37 districts):
+  - Adilabad
+  - Alluri Sitharama Raju
+  - Anakapalli
+  - Ananthapuramu
+  - Annamayya
+  - Bapatla
+  - Chittoor
+  - Dr. B.R. Ambedkar Konaseema
+  - East Godavari
+  - Eluru
+  - Guntur
+  - Hyderabad
+  - K V Rangareddy
+  - Kakinada
+  - Karimnagar
+  - Khammam
+  - Krishna
+  - Kurnool
+  - Mahabubnagar
+  - Medak
+  - N. T. R
+  - Nalgonda
+  - Nandyal
+  - Nizamabad
+  - Palnadu
+  - Parvathipuram Manyam
+  - Prakasam
+  - Ranga Reddy
+  - Sri Potti Sriramulu Nellore
+  - Sri Sathya Sai
+  - Srikakulam
+  - Tirupati
+  - Visakhapatnam
+  - Vizianagaram
+  - Warangal
+  - West Godavari
+  - Y S R
+
+Arunachal Pradesh (24 districts):
+  - Anjaw
+  - Changlang
+  - Dibang Valley
+  - East Kameng
+  - East Siang
+  - Kamle
+  - Kra Daadi
+  - Kurung Kumey
+  - Leparada
+  - Lohit
+  - Longding
+  - Lower Dibang Valley
+  - Lower Siang
+  - Lower Subansiri
+  - Namsai
+  - Pakke Kessang
+  - Papum Pare
+  - Shi-Yomi
+  - Siang
+  - Tawang
+  - Tirap
+  - Upper Siang
+  - Upper Subansiri
+  - West Kameng
+
+Assam (35 districts):
+  - Bajali
+  - Baksa
+  - Barpeta
+  - Biswanath
+  - Bongaigaon
+  - Charaideo
+  - Chirang
+  - Darrang
+  - Dhemaji
+  - Dhubri
+  - Dibrugarh
+  - Dima Hasao
+  - Goalpara
+  - Golaghat
+  - Hailakandi
+  - Hojai
+  - Jorhat
+  - Kamrup
+  - Kamrup Metro
+  - Karbi Anglong
+  - Karimganj
+  - Kokrajhar
+  - Lakhimpur
+  - Majuli
+  - Marigaon
+  - Nagaon
+  - Nalbari
+  - Sivasagar
+  - Sonitpur
+  - South Salmara Mancachar
+  - Sribhumi
+  - Tamulpur
+  - Tinsukia
+  - Udalguri
+  - West Karbi Anglong
+
+Bihar (38 districts):
+  - Araria
+  - Arwal
+  - Aurangabad
+  - Banka
+  - Begusarai
+  - Bhagalpur
+  - Bhojpur
+  - Buxar
+  - Darbhanga
+  - Gaya
+  - Gopalganj
+  - Jamui
+  - Jehanabad
+  - Kaimur
+  - Katihar
+  - Khagaria
+  - Kishanganj
+  - Lakhisarai
+  - Madhepura
+  - Madhubani
+  - Munger
+  - Muzaffarpur
+  - Nalanda
+  - Nawada
+  - Pashchim Champaran
+  - Patna
+  - Purba Champaran
+  - Purnea
+  - Rohtas
+  - Saharsa
+  - Samastipur
+  - Saran
+  - Sheikhpura
+  - Sheohar
+  - Sitamarhi
+  - Siwan
+  - Supaul
+  - Vaishali
+
+Chandigarh (2 districts):
+  - Chandigarh
+  - Mohali
+
+Chhattisgarh (34 districts):
+  - Balod
+  - Baloda Bazar
+  - Balrampur-Ramanujganj
+  - Bastar
+  - Bemetara
+  - Bijapur
+  - Bilaspur
+  - Dantewada
+  - Dhamtari
+  - Durg
+  - Gariyaband
+  - Gaurela-Pendra-Marwahi
+  - Janjgir-Champa
+  - Jashpur
+  - Kabirdham
+  - Kanker
+  - Khairagarh-Chhuikhadan-Gandai
+  - Kondagaon
+  - Korba
+  - Koriya
+  - Mahasamund
+  - Manendragarh Chirmiri Bharatpur
+  - Manendragarh-Chirmiri-Bharatpur(M C B)
+  - Mohla-Manpur-Ambagarh Chouki
+  - Mungeli
+  - Narayanpur
+  - Raigarh
+  - Raipur
+  - Rajnandgaon
+  - Sakti
+  - Sarangarh-Bilaigarh
+  - Sukma
+  - Surajpur
+  - Surguja
+
+Dadra and Nagar Haveli and Daman and Diu (2 districts):
+  - Dadra And Nagar Haveli
+  - Diu
+
+Delhi (12 districts):
+  - Central Delhi
+  - East Delhi
+  - Najafgarh
+  - New Delhi
+  - North Delhi
+  - North East Delhi
+  - North West Delhi
+  - Shahdara
+  - South Delhi
+  - South East Delhi
+  - South West Delhi
+  - West Delhi
+
+Goa (5 districts):
+  - Bardez
+  - Bicholim
+  - North Goa
+  - South Goa
+  - Tiswadi
+
+Gujarat (33 districts):
+  - Ahmedabad
+  - Amreli
+  - Anand
+  - Arvalli
+  - Banaskantha
+  - Bharuch
+  - Bhavnagar
+  - Botad
+  - Chhotaudepur
+  - Dahod
+  - Dang
+  - Devbhumi Dwarka
+  - Gandhinagar
+  - Gir Somnath
+  - Jamnagar
+  - Junagadh
+  - Kachchh
+  - Kheda
+  - Mahesana
+  - Mahisagar
+  - Morbi
+  - Narmada
+  - Navsari
+  - Panchmahal
+  - Patan
+  - Porbandar
+  - Rajkot
+  - Sabarkantha
+  - Surat
+  - Surendranagar
+  - Tapi
+  - Vadodara
+  - Valsad
+
+Haryana (22 districts):
+  - Ambala
+  - Bhiwani
+  - Charkhi Dadri
+  - Faridabad
+  - Fatehabad
+  - Gurugram
+  - Hisar
+  - Jhajjar
+  - Jind
+  - Kaithal
+  - Karnal
+  - Kurukshetra
+  - Mahendragarh
+  - Nuh
+  - Palwal
+  - Panchkula
+  - Panipat
+  - Rewari
+  - Rohtak
+  - Sirsa
+  - Sonipat
+  - Yamunanagar
+
+Himachal Pradesh (12 districts):
+  - Bilaspur
+  - Chamba
+  - Hamirpur
+  - Kangra
+  - Kinnaur
+  - Kullu
+  - Lahaul And Spiti
+  - Mandi
+  - Shimla
+  - Sirmaur
+  - Solan
+  - Una
+
+Jammu and Kashmir (22 districts):
+  - Anantnag
+  - Bandipur
+  - Baramulla
+  - Budgam
+  - Doda
+  - Ganderbal
+  - Jammu
+  - Kargil
+  - Kathua
+  - Kishtwar
+  - Kulgam
+  - Kupwara
+  - Leh
+  - Pulwama
+  - Punch
+  - Rajouri
+  - Ramban
+  - Reasi
+  - Samba
+  - Shopian
+  - Srinagar
+  - Udhampur
+
+Jharkhand (24 districts):
+  - Bokaro
+  - Chatra
+  - Deoghar
+  - Dhanbad
+  - Dumka
+  - Garhwa
+  - Giridih
+  - Godda
+  - Gumla
+  - Hazaribagh
+  - Jamtara
+  - Khunti
+  - Kodarma
+  - Latehar
+  - Lohardaga
+  - Pakur
+  - Palamu
+  - Pashchimi Singhbhum
+  - Purbi Singhbhum
+  - Ramgarh
+  - Ranchi
+  - Sahibganj
+  - Seraikela-Kharsawan
+  - Simdega
+
+Karnataka (31 districts):
+  - Bagalkote
+  - Ballari
+  - Belagavi
+  - Bengaluru Rural
+  - Bengaluru Urban
+  - Bidar
+  - Chamarajanagar
+  - Chikkaballapura
+  - Chikkamagaluru
+  - Chitradurga
+  - Dakshina Kannada
+  - Davanagere
+  - Dharwad
+  - Gadag
+  - Hassan
+  - Haveri
+  - Kalaburagi
+  - Kodagu
+  - Kolar
+  - Koppal
+  - Mandya
+  - Mysuru
+  - Raichur
+  - Ramanagara
+  - Shivamogga
+  - Tumakuru
+  - Udupi
+  - Uttara Kannada
+  - Vijayanagara
+  - Vijayapura
+  - Yadgir
+
+Kerala (14 districts):
+  - Alappuzha
+  - Ernakulam
+  - Idukki
+  - Kannur
+  - Kasaragod
+  - Kollam
+  - Kottayam
+  - Kozhikode
+  - Malappuram
+  - Palakkad
+  - Pathanamthitta
+  - Thiruvananthapuram
+  - Thrissur
+  - Wayanad
+
+Ladakh (2 districts):
+  - Kargil
+  - Leh
+
+Lakshadweep (1 districts):
+  - Lakshadweep District
+
+Madhya Pradesh (54 districts):
+  - Alirajpur
+  - Anuppur
+  - Ashoknagar
+  - Balaghat
+  - Barwani
+  - Betul
+  - Bhind
+  - Bhopal
+  - Burhanpur
+  - Chhatarpur
+  - Chhindwara
+  - Damoh
+  - Datia
+  - Dewas
+  - Dhar
+  - Dindori
+  - Guna
+  - Gwalior
+  - Harda
+  - Indore
+  - Jabalpur
+  - Jhabua
+  - Katni
+  - Khandwa
+  - Khargone
+  - Maihar
+  - Mandla
+  - Mandsaur
+  - Mauganj
+  - Morena
+  - Narmadapuram
+  - Narsinghpur
+  - Neemuch
+  - Niwari
+  - Pandhurna
+  - Panna
+  - Raisen
+  - Rajgarh
+  - Ratlam
+  - Rewa
+  - Sagar
+  - Satna
+  - Sehore
+  - Seoni
+  - Shahdol
+  - Shajapur
+  - Sheopur
+  - Shivpuri
+  - Sidhi
+  - Singrauli
+  - Tikamgarh
+  - Ujjain
+  - Umaria
+  - Vidisha
+
+Maharashtra (35 districts):
+  - Ahmednagar
+  - Akola
+  - Amravati
+  - Beed
+  - Bhandara
+  - Buldhana
+  - Chandrapur
+  - Chhatrapati Sambhajinagar
+  - Dharashiv
+  - Dhule
+  - Gadchiroli
+  - Gondia
+  - Hingoli
+  - Jalgaon
+  - Jalna
+  - Kolhapur
+  - Latur
+  - Mumbai
+  - Nagpur
+  - Nanded
+  - Nandurbar
+  - Nashik
+  - Palghar
+  - Parbhani
+  - Pune
+  - Raigad
+  - Ratnagiri
+  - Sangli
+  - Satara
+  - Sindhudurg
+  - Solapur
+  - Thane
+  - Wardha
+  - Washim
+  - Yavatmal
+
+Manipur (13 districts):
+  - Bishnupur
+  - Chandel
+  - Churachandpur
+  - Imphal East
+  - Imphal West
+  - Jiribam
+  - Kakching
+  - Kangpokpi
+  - Pherzawl
+  - Senapati
+  - Tamenglong
+  - Thoubal
+  - Ukhrul
+
+Meghalaya (12 districts):
+  - East Garo Hills
+  - East Jaintia Hills
+  - East Khasi Hills
+  - Eastern West Khasi Hills
+  - North Garo Hills
+  - Ri Bhoi
+  - South Garo Hills
+  - South West Garo Hills
+  - South West Khasi Hills
+  - West Garo Hills
+  - West Jaintia Hills
+  - West Khasi Hills
+
+Mizoram (11 districts):
+  - Aizawl
+  - Champhai
+  - Hnahthial
+  - Khawzawl
+  - Kolasib
+  - Lawngtlai
+  - Lunglei
+  - Mamit
+  - Saiha
+  - Saitual
+  - Serchhip
+
+Nagaland (17 districts):
+  - Chumoukedima
+  - Dimapur
+  - Kiphire
+  - Kohima
+  - Longleng
+  - Meluri
+  - Mokokchung
+  - Mon
+  - Niuland
+  - Noklak
+  - Peren
+  - Phek
+  - Shamator
+  - Tseminyu
+  - Tuensang
+  - Wokha
+  - Zunheboto
+
+Odisha (30 districts):
+  - Anugul
+  - Balangir
+  - Baleswar
+  - Bargarh
+  - Bhadrak
+  - Boudh
+  - Cuttack
+  - Debagarh
+  - Dhenkanal
+  - Gajapati
+  - Ganjam
+  - Jagatsinghapur
+  - Jajpur
+  - Jharsuguda
+  - Kalahandi
+  - Kandhamal
+  - Kendrapara
+  - Kendujhar
+  - Khordha
+  - Koraput
+  - Malkangiri
+  - Mayurbhanj
+  - Nabarangpur
+  - Nayagarh
+  - Nuapada
+  - Puri
+  - Rayagada
+  - Sambalpur
+  - Subarnapur
+  - Sundargarh
+
+Puducherry (5 districts):
+  - Cuddalore
+  - Karaikal
+  - Puducherry
+  - Viluppuram
+  - Yanam
+
+Punjab (23 districts):
+  - Amritsar
+  - Barnala
+  - Bathinda
+  - Faridkot
+  - Fatehgarh Sahib
+  - Fazilka
+  - Ferozepur
+  - Gurdaspur
+  - Hoshiarpur
+  - Jalandhar
+  - Kapurthala
+  - Ludhiana
+  - Malerkotla
+  - Mansa
+  - Moga
+  - Pathankot
+  - Patiala
+  - Rupnagar
+  - Sahibzada Ajit Singh Nagar
+  - Sangrur
+  - Shahid Bhagat Singh Nagar
+  - Sri Muktsar Sahib
+  - Tarn Taran
+
+Rajasthan (41 districts):
+  - Ajmer
+  - Alwar
+  - Balotra
+  - Banswara
+  - Baran
+  - Barmer
+  - Beawar
+  - Bharatpur
+  - Bhilwara
+  - Bikaner
+  - Bundi
+  - Chittorgarh
+  - Churu
+  - Dausa
+  - Deeg
+  - Dholpur
+  - Didwana-Kuchaman
+  - Dungarpur
+  - Ganganagar
+  - Hanumangarh
+  - Jaipur
+  - Jaisalmer
+  - Jalore
+  - Jhalawar
+  - Jhunjhunu
+  - Jodhpur
+  - Karauli
+  - Khairthal-Tijara
+  - Kota
+  - Kotputli-Behror
+  - Nagaur
+  - Pali
+  - Phalodi
+  - Pratapgarh
+  - Rajsamand
+  - Salumbar
+  - Sawai Madhopur
+  - Sikar
+  - Sirohi
+  - Tonk
+  - Udaipur
+
+Sikkim (6 districts):
+  - East Sikkim
+  - Mangan
+  - Namchi
+  - North Sikkim
+  - South Sikkim
+  - West Sikkim
+
+Tamil Nadu (38 districts):
+  - Ariyalur
+  - Chengalpattu
+  - Chennai
+  - Coimbatore
+  - Cuddalore
+  - Dharmapuri
+  - Dindigul
+  - Erode
+  - Kallakurichi
+  - Kanchipuram
+  - Kanyakumari
+  - Karur
+  - Krishnagiri
+  - Madurai
+  - Mayiladuthurai
+  - Nagapattinam
+  - Namakkal
+  - Perambalur
+  - Pudukkottai
+  - Ramanathapuram
+  - Ranipet
+  - Salem
+  - Sivaganga
+  - Tenkasi
+  - Thanjavur
+  - The Nilgiris
+  - Theni
+  - Thoothukudi
+  - Tiruchirappalli
+  - Tirunelveli
+  - Tirupattur
+  - Tiruppur
+  - Tiruvallur
+  - Tiruvannamalai
+  - Tiruvarur
+  - Vellore
+  - Viluppuram
+  - Virudhunagar
+
+Telangana (34 districts):
+  - Adilabad
+  - Bhadradri Kothagudem
+  - Hanumakonda
+  - Hyderabad
+  - Jagitial
+  - Jangaon
+  - Jayashankar Bhupalapally
+  - Jogulamba Gadwal
+  - Kamareddy
+  - Karimnagar
+  - Khammam
+  - Komaram Bheem
+  - Mahabubabad
+  - Mahabubnagar
+  - Mancherial
+  - Medak
+  - Medchal-Malkajgiri
+  - Mulugu
+  - Nagarkurnool
+  - Nalgonda
+  - Narayanpet
+  - Nirmal
+  - Nizamabad
+  - Peddapalli
+  - Rajanna Sircilla
+  - Sangareddy
+  - Siddipet
+  - Suryapet
+  - Vikarabad
+  - Wanaparthy
+  - Warangal
+  - Warangal Rural
+  - Warangal Urban
+  - Yadadri-Bhuvanagiri
+
+Tripura (8 districts):
+  - Dhalai
+  - Gomati
+  - Khowai
+  - North Tripura
+  - Sepahijala
+  - South Tripura
+  - Unakoti
+  - West Tripura
+
+Uttar Pradesh (72 districts):
+  - Aligarh
+  - Ambedkar Nagar
+  - Amethi
+  - Amroha
+  - Auraiya
+  - Ayodhya
+  - Azamgarh
+  - Baghpat
+  - Bahraich
+  - Ballia
+  - Balrampur
+  - Banda
+  - Barabanki
+  - Bareilly
+  - Basti
+  - Bhadohi
+  - Bijnor
+  - Budaun
+  - Bulandshahr
+  - Chandauli
+  - Chitrakoot
+  - Deoria
+  - Etah
+  - Etawah
+  - Farrukhabad
+  - Fatehpur
+  - Firozabad
+  - Gautam Buddha Nagar
+  - Ghaziabad
+  - Ghazipur
+  - Gonda
+  - Gorakhpur
+  - Hamirpur
+  - Hardoi
+  - Hathras
+  - Jalaun
+  - Jaunpur
+  - Jhansi
+  - Kannauj
+  - Kanpur Dehat
+  - Kanpur Nagar
+  - Kasganj
+  - Kaushambi
+  - Kushinagar
+  - Lakhimpur Kheri
+  - Lalitpur
+  - Lucknow
+  - Maharajganj
+  - Mahoba
+  - Mainpuri
+  - Mathura
+  - Mau
+  - Meerut
+  - Mirzapur
+  - Moradabad
+  - Muzaffarnagar
+  - Pilibhit
+  - Pratapgarh
+  - Prayagraj
+  - Rae Bareli
+  - Saharanpur
+  - Sambhal
+  - Sant Kabir Nagar
+  - Shahjahanpur
+  - Shamli
+  - Shravasti
+  - Siddharth Nagar
+  - Sitapur
+  - Sonbhadra
+  - Sultanpur
+  - Unnao
+  - Varanasi
+
+Uttarakhand (13 districts):
+  - Almora
+  - Bageshwar
+  - Chamoli
+  - Champawat
+  - Dehradun
+  - Haridwar
+  - Nainital
+  - Pauri Garhwal
+  - Pithoragarh
+  - Rudraprayag
+  - Tehri Garhwal
+  - Udham Singh Nagar
+  - Uttarkashi
+
+West Bengal (23 districts):
+  - Alipurduar
+  - Bankura
+  - Birbhum
+  - Cooch Behar
+  - Darjeeling
+  - Hooghly
+  - Howrah
+  - Jalpaiguri
+  - Jhargram
+  - Kalimpong
+  - Kolkata
+  - Malda
+  - Murshidabad
+  - Nadia
+  - North 24 Parganas
+  - North Dinajpur
+  - Paschim Bardhaman
+  - Paschim Medinipur
+  - Purba Bardhaman
+  - Purba Medinipur
+  - Purulia
+  - South 24 Parganas
+  - South Dinajpur
+
