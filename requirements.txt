@@ -1,3 +1,7 @@
 pandas
 numpy
 duckdb
+rapidfuzz
+matplotlib
+netwrorkx
+scipy
