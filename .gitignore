@@ -4,3 +4,4 @@ __pycache__/
 database/logs/
 database/reports/
 adjacency_output/unmatched**.log
+env/

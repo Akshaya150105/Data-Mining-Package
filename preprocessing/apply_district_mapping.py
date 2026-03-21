@@ -359,20 +359,20 @@ DISTRICT_MANUAL: dict[str, dict[str, str]] = {
 # These run against title-cased values (after Step 3), so patterns are
 # written to match that casing.
 JUNK_DISTRICT_PATTERNS = [
-    r"(?i)^near\b",           # "Near XYZ hospital / road"
+    r"^near\b",           # "Near XYZ hospital / road"
     r"^\d{6}$",               # 6-digit PIN codes
     r"^\d+$",                 # purely numeric
-    r"(?i)idpl colony",
-    r"(?i)bally jagachha",
-    r"(?i)naihati anandabazar",
-    r"(?i)south dumdum",
-    r"(?i)domjur",
-    r"(?i)kadiri road",
-    r"(?i)balianta",
-    r"(?i)^bhadrak r\b",
-    r"(?i)^5th cross$",
+    r"idpl colony",
+    r"bally jagachha",
+    r"naihati anandabazar",
+    r"south dumdum",
+    r"domjur",
+    r"kadiri road",
+    r"balianta",
+    r"^bhadrak r\b",
+    r"^5th cross$",
 ]
-JUNK_RE = re.compile("|".join(JUNK_DISTRICT_PATTERNS))
+JUNK_RE = re.compile("|".join(JUNK_DISTRICT_PATTERNS),re.IGNORECASE)
 
 EXPLICIT_JUNK = {
     "Near University Thana", "Near Uday Nagar Nit Garden",

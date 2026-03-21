@@ -5,3 +5,4 @@ rapidfuzz
 matplotlib
 netwrorkx
 scipy
+python-calamine
