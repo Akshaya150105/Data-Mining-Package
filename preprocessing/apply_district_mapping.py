@@ -1,8 +1,12 @@
 """
-apply_district_mapping.py – Steps 3-6: District cleaning pipeline
-==================================================================
+apply_district_mapping.py – Basic preprocessing + Steps 3-6: District cleaning pipeline
+========================================================================================
 Standardises the 'district' column across all three Aadhaar tables.
+This file merges the functionality of the former preprocess_districts.py.
 
+  BASIC PREPROCESSING       : Standalone helper for simple lowercase / trim /
+                               title-case formatting (used independently or as
+                               a precursor before the full pipeline).
   STEP 3 – Basic preprocessing : encoding fix → replace parentheses with
                                   spaces → trim → title-case (hyphens preserved)
   STEP 4 – Fuzzy matching      : per-state match against LGD reference
@@ -387,6 +391,87 @@ EXPLICIT_JUNK = {
 # ── Helpers ────────────────────────────────────────────────────────────────────
 def _esc(s: str) -> str:
     return str(s).replace("'", "''")
+
+
+def preprocess_district_name(district) -> str:
+    """
+    Simple standalone formatter: lowercase, strip, collapse spaces,
+    remove common noise characters, then title-case.
+    Used by apply_basic_district_preprocessing() below.
+    """
+    if pd.isna(district):
+        return ""
+    cleaned = str(district).lower().strip()
+    cleaned = " ".join(cleaned.split())
+    for char in ["*", "?", "(", ")", ".", ",", "-", "_"]:
+        cleaned = cleaned.replace(char, " ")
+    cleaned = " ".join(cleaned.split())
+    return cleaned.title()
+
+
+def apply_basic_district_preprocessing() -> None:
+    """
+    Lightweight pass over all three tables: lowercase → collapse spaces →
+    remove common noise characters → title-case.  Runs independently of the
+    full Step 3-6 pipeline and can be called as a quick first-pass clean.
+    (Previously located in preprocess_districts.py.)
+    """
+    con = get_connection()
+    tables = ["biometric_data", "demographic_data", "enrolment_data"]
+
+    print("Starting basic preprocessing of district names (lowercase, trim, normalize spaces)...")
+
+    for table in tables:
+        print(f"\nProcessing {table}...")
+
+        count = con.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
+        if count == 0:
+            print("  Table is empty, skipping.")
+            continue
+
+        try:
+            results = con.execute(
+                f"SELECT DISTINCT district FROM {table} WHERE district IS NOT NULL"
+            ).fetchall()
+            original_districts = [r[0] for r in results]
+
+            mapping: dict[str, str] = {}
+            for orig in original_districts:
+                cleaned = preprocess_district_name(orig)
+                if orig != cleaned:
+                    mapping[orig] = cleaned
+
+            if not mapping:
+                print("  No districts needed basic preprocessing formatting.")
+                continue
+
+            print(f"  Applying basic formatting to {len(mapping)} distinct district name variants...")
+
+            con.execute("DROP TABLE IF EXISTS dist_mapping_temp")
+            con.execute(
+                "CREATE TEMP TABLE dist_mapping_temp (old_dist VARCHAR, new_dist VARCHAR)"
+            )
+            for old_d, new_d in mapping.items():
+                old_escaped = old_d.replace("'", "''")
+                new_escaped = new_d.replace("'", "''")
+                con.execute(
+                    f"INSERT INTO dist_mapping_temp VALUES ('{old_escaped}', '{new_escaped}')"
+                )
+
+            con.execute(f"""
+                UPDATE {table}
+                SET district = dist_mapping_temp.new_dist
+                FROM dist_mapping_temp
+                WHERE {table}.district = dist_mapping_temp.old_dist
+            """)
+            con.execute("DROP TABLE IF EXISTS dist_mapping_temp")
+            print(f"  Successfully standardised spacing and casing in {table}.")
+
+        except Exception as e:  # noqa: BLE001
+            print(f"  Error processing {table}: {e}")
+
+    print("\nBasic district preprocessing complete!")
+    con.close()
 
 
 def _fix_encoding(raw: str) -> str:
