@@ -1,0 +1,38 @@
+=======================================================
+SPATIAL AUTOCORRELATION REPORT — AADHAAR ENROLMENT
+=======================================================
+
+Global Moran's I (enrol_total) : 0.036135
+P-value (permutation test)      : 0.000000
+Interpretation                  : CLUSTERED (I > 0)
+
+LISA classification (enrol_total):
+  HH (hot spots)   : 68 districts
+  LL (cold spots)  : 170 districts
+  HL (outliers)    : 2 districts
+  LH (outliers)    : 1 districts
+  NS (not sig.)    : 341 districts
+
+Top HH districts (Aadhaar hot spots):
+  Sitamarhi
+  East Khasi Hills
+  Bahraich
+  Saran (Chhapra)
+  Pashchim Champaran
+  Banas Kantha
+  Thane
+  Balrampur
+  Sitapur
+  Purba Champaran
+
+Top LL districts (Aadhaar cold spots):
+  Adilabad
+  Alappuzha
+  Anantnag
+  Anjaw
+  Anugul
+  Ariyalur
+  Aurangabad
+  Bagalkot
+  Balangir
+  Bargarh

@@ -1,7 +1,7 @@
 import streamlit as st
 from pathlib import Path
 import pandas as pd
-import numpy as np
+
 st.set_page_config(page_title="Aadhaar Data Mining", page_icon="🗺️",
                    layout="wide", initial_sidebar_state="expanded")
 
@@ -35,12 +35,14 @@ STATE_DIR      = Path("state_output")
 TIMESERIES_DIR = Path("timeseries_output")
 SPATIAL_DIR    = Path("spatial_output")
 TABLE_DIR  = Path("table_output")
-STGCN_DIR  = Path("../STCGN/stgcn_output")
+STGCN_DIR     = Path("stgcn_output")
+FORECAST_DIR  = Path("forecast_output")
 STATE_DIR      = Path("state_output")
 TIMESERIES_DIR = Path("timeseries_output")
 SPATIAL_DIR    = Path("spatial_output")
 TABLE_DIR  = Path("table_output")
-
+STGCN_DIR     = Path("stgcn_output")
+FORECAST_DIR  = Path("forecast_output")
 
 # ── Sidebar ──────────────────────────────────────────────────────────────
 with st.sidebar:
@@ -54,7 +56,7 @@ with st.sidebar:
     )
     st.markdown("---")
     page = st.radio("Navigation",
-        ["Clustering Analysis", "Table Analysis", "State Comparison", "Time Series Trends", "District Deep-Dive", "STGCN Results"],
+        ["Clustering Analysis", "Table Analysis", "State Comparison", "Time Series Trends", "Spatial Autocorrelation", "District Deep-Dive", "STGCN Results", "Forecast"],
         label_visibility="collapsed")
     st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
     st.markdown(
@@ -93,6 +95,12 @@ def icard(color, cluster_label, title, body):
 # ══════════════════════════════════════════════════════════════════════════
 # PAGE 1 — CLUSTERING
 # ══════════════════════════════════════════════════════════════════════════
+
+
+# ══════════════════════════════════════════════════════════════════════
+# CLUSTERING ANALYSIS
+# ══════════════════════════════════════════════════════════════════════
+
 if page == "Clustering Analysis":
     st.markdown("<div class='section-title'>District Clustering Analysis</div>"
                 "<div class='section-sub'>K-Means and DBSCAN applied to engineered Aadhaar adoption features "
@@ -182,115 +190,185 @@ if page == "Clustering Analysis":
 # ══════════════════════════════════════════════════════════════════════════
 # PAGE 2 — STATE COMPARISON
 # ══════════════════════════════════════════════════════════════════════════
-elif page == "State Comparison":
-    st.markdown("<div class='section-title'>State-level Comparison</div>"
-                "<div class='section-sub'>Rankings, age ratios, growth momentum and dependency patterns "
-                "across all Indian states · Apr–Jul 2025</div>", unsafe_allow_html=True)
 
-    csv_path = STATE_DIR/"state_summary.csv"
-    if not csv_path.exists():
-        st.warning("Run state_comparison.py first to generate the charts and data.")
-        st.code("python state_comparison.py --db ../database/aadhar.duckdb")
+# ══════════════════════════════════════════════════════════════════════
+# TABLE ANALYSIS
+# ══════════════════════════════════════════════════════════════════════
+
+elif page == "Table Analysis":
+
+    st.markdown("""
+    <div class='section-title'>Table Analysis</div>
+    <div class='section-sub'>
+        Complete statistics and visualizations for all 3 Aadhaar tables
+        across all states and all dates — no district filter
+    </div>
+    """, unsafe_allow_html=True)
+
+    TD = TABLE_DIR
+    if not (TD / "bio_growth_trend.png").exists():
+        st.warning("Charts not found. Run table_analysis.py first.")
+        st.code("python table_analysis.py --db ../database/aadhar.duckdb")
         st.stop()
 
-    sdf = pd.read_csv(csv_path)
-    top_enrol  = sdf.loc[sdf['enrol_total'].idxmax(),'state']
-    top_growth = sdf.loc[sdf['avg_enrol_growth'].idxmax(),'state']
-    top_dep    = sdf.loc[sdf['avg_dependency_ratio'].idxmax(),'state']
-    top_adult  = sdf.loc[sdf['avg_adult_ratio'].idxmax(),'state']
+    def show(path, wide=True):
+        p = TD / path
+        if p.exists():
+            st.markdown("<div class='img-frame'>", unsafe_allow_html=True)
+            st.image(str(p), use_container_width=wide)
+            st.markdown("</div>", unsafe_allow_html=True)
+        else:
+            st.warning(f"{path} not found.")
 
-    st.markdown(
-        f"<div class='metric-row'>"
-        f"<div class='metric-card'><div class='metric-label'>States analysed</div>"
-        f"<div class='metric-value'>{len(sdf)}</div><div class='metric-note'>+ union territories</div></div>"
-        f"<div class='metric-card'><div class='metric-label'>Highest enrolment</div>"
-        f"<div class='metric-value' style='font-size:1.2rem;'>{top_enrol[:18]}</div>"
-        f"<div class='metric-note'>total volume Apr–Jul</div></div>"
-        f"<div class='metric-card'><div class='metric-label'>Fastest growing</div>"
-        f"<div class='metric-value' style='font-size:1.2rem;'>{top_growth[:18]}</div>"
-        f"<div class='metric-note'>highest avg daily growth %</div></div>"
-        f"<div class='metric-card'><div class='metric-label'>Highest dependency</div>"
-        f"<div class='metric-value' style='font-size:1.2rem;'>{top_dep[:18]}</div>"
-        f"<div class='metric-note'>child-to-adult ratio</div></div>"
-        f"<div class='metric-card'><div class='metric-label'>Most adult-saturated</div>"
-        f"<div class='metric-value' style='font-size:1.2rem;'>{top_adult[:18]}</div>"
-        f"<div class='metric-note'>highest adult enrol ratio</div></div>"
-        f"</div>", unsafe_allow_html=True)
+    def note(body):
+        st.markdown(
+            f"<div style='background:white;border:1px solid #e5e7eb;"
+            f"border-radius:10px;padding:14px 18px;font-size:13px;"
+            f"color:#6b7280;line-height:1.7;margin-top:8px;'>{body}</div>",
+            unsafe_allow_html=True)
 
-    t1,t2,t3,t4,t5,t6 = st.tabs([
-        "Enrolment ranking","Adult vs minor","Growth momentum",
-        "Dependency heatmap","Size vs growth","Data table"])
+    tab_bio, tab_enrol, tab_demo, tab_combined = st.tabs([
+        "Biometric",
+        "Enrolment",
+        "Demographic",
+        "Combined",
+    ])
 
-    with t1:
-        c1,c2 = st.columns([2,1])
-        with c1: img(STATE_DIR/"state_enrolment_bar.png")
+    # ── BIOMETRIC ──────────────────────────────────────────────────────
+    with tab_bio:
+        st.markdown("<div style='font-size:13px;color:#6b7280;margin-bottom:12px;'>"
+                    "Biometric enrolment across all states and all dates — age structure, "
+                    "dependency ratios, growth momentum and volatility.</div>",
+                    unsafe_allow_html=True)
+
+        c1,c2 = st.columns(2)
+        with c1:
+            st.markdown("**National age group totals**")
+            show("bio_age_distribution.png")
         with c2:
-            note("What this shows",
-                 "Total Aadhaar enrolment summed across all districts within each state "
-                 "over Apr–Jul 2025. <b style='color:#534AB7;'>Purple bars</b> = top 5 states by volume. "
-                 "States with more districts appear higher — use the other tabs for size-agnostic comparisons.")
+            st.markdown("**Top 10 vs Bottom 10 states**")
+            show("bio_top_bottom.png")
 
-    with t2:
-        c1,c2 = st.columns([2,1])
-        with c1: img(STATE_DIR/"state_adult_vs_minor.png")
+        st.markdown("**National daily trend — bio total with age breakdown**")
+        show("bio_growth_trend.png")
+        note("Bars show raw daily totals. Lines show 7-day rolling averages for total, "
+             "age 5–17 and age 17+. Vertical lines mark month boundaries.")
+
+        c3,c4 = st.columns(2)
+        with c3:
+            st.markdown("**State × month dependency heatmap**")
+            show("bio_state_heatmap.png")
+            note("Each cell = avg biometric dependency ratio for that state in that month. "
+                 "Darker = higher ratio of young enrolees relative to adults.")
+        with c4:
+            st.markdown("**Enrolment volatility by state**")
+            show("bio_volatility_map.png")
+            note("7-day std of biometric enrolment per state. "
+                 "Orange = above-median volatility — spiky, campaign-driven patterns.")
+
+        st.markdown("**Age 5–17 ratio vs dependency — state scatter**")
+        show("bio_ratio_scatter.png")
+        note("Each dot is one state. Bubble size = total bio enrolment. "
+             "Colour = avg daily growth rate (green = growing, red = declining).")
+
+    # ── ENROLMENT ──────────────────────────────────────────────────────
+    with tab_enrol:
+        st.markdown("<div style='font-size:13px;color:#6b7280;margin-bottom:12px;'>"
+                    "Enrolment across all states and all dates — age breakdowns, "
+                    "adult vs minor ratios, growth and volatility patterns.</div>",
+                    unsafe_allow_html=True)
+
+        c1,c2 = st.columns([1,2])
+        with c1:
+            st.markdown("**National age group share**")
+            show("enrol_age_pie.png")
         with c2:
-            note("Adult vs minor ratio",
-                 "Split between minor (age 0–17) and adult (18+) enrolments as a proportion of the state total. "
-                 "Sorted by adult ratio.<br><br>"
-                 "<b>High minor ratio</b> = younger population or ongoing child Aadhaar push.<br><br>"
-                 "<b>High adult ratio</b> = mature, near-saturated adult coverage.")
+            st.markdown("**Adult vs minor ratio — all states**")
+            show("enrol_adult_minor_bar.png")
+            note("Sorted by adult ratio. States at the top have higher adult saturation. "
+                 "States at the bottom still have a large share of child enrolments ongoing.")
 
-    with t3:
-        c1,c2 = st.columns([2,1])
-        with c1: img(STATE_DIR/"state_growth_bar.png")
+        st.markdown("**National daily trend — enrolment total by age group**")
+        show("enrol_trend.png")
+        note("All 4 series smoothed with a 7-day rolling average. "
+             "Age 18+ dominates nationally but watch for states where 0–5 spikes seasonally.")
+
+        c3,c4 = st.columns(2)
+        with c3:
+            st.markdown("**State × month growth rate heatmap**")
+            show("enrol_growth_heatmap.png")
+            note("Green = positive growth, Red = decline. "
+                 "Cells show avg daily % change for each state in each month.")
+        with c4:
+            st.markdown("**Growth momentum ranking**")
+            show("enrol_top_growth.png")
+            note("Orange = above-median growth. Purple dashed line = national median. "
+                 "States above it had active enrolment drives during the window.")
+
+        st.markdown("**Enrolment volatility by state**")
+        show("enrol_volatility.png")
+        note("High volatility = irregular enrolment bursts rather than steady flow. "
+             "Investigate the top volatile states for campaign-driven patterns.")
+
+    # ── DEMOGRAPHIC ────────────────────────────────────────────────────
+    with tab_demo:
+        st.markdown("<div style='font-size:13px;color:#6b7280;margin-bottom:12px;'>"
+                    "Demographic enrolment across all states and all dates — age ratios, "
+                    "dependency patterns and state comparisons.</div>",
+                    unsafe_allow_html=True)
+
+        c1,c2 = st.columns(2)
+        with c1:
+            st.markdown("**Dependency ratio — distribution + state ranking**")
+            show("demo_dependency_dist.png")
+            note("Left: distribution of avg dependency ratios across states. "
+                 "Right: per-state ranking. Orange = above national median.")
         with c2:
-            note("Growth momentum",
-                 "Average daily % change in enrolment across all districts in each state. "
-                 "<b style='color:#D85A30;'>Orange</b> = above-median growth. "
-                 "<b style='color:#9ca3af;'>Grey</b> = below-median. "
-                 "The dashed purple line is the national median. "
-                 "States above it had active enrolment drives during the period.")
+            st.markdown("**Age group split — top 30 states**")
+            show("demo_state_comparison.png")
+            note("Stacked bar showing age 5–17 vs age 17+ demographic enrolment. "
+                 "Sorted by total. Shows which states have younger demographic profiles.")
 
-    with t4:
-        c1,c2 = st.columns([2,1])
-        with c1: img(STATE_DIR/"state_dependency_heatmap.png")
-        with c2:
-            note("Dependency heatmap",
-                 "Child-to-adult biometric dependency ratio for each state across the 4 monthly time steps.<br><br>"
-                 "<b>Darker red</b> = higher proportion of children vs adults.<br>"
-                 "<b>Lighter yellow</b> = adult-dominant.<br><br>"
-                 "Consistent dark across months = structural demographic. "
-                 "Changing colours = shifting enrolment pattern.")
+        st.markdown("**National daily trend — demographic total by age group**")
+        show("demo_trend.png")
+        note("Smoothed daily totals for demographic enrolment. "
+             "Compare the gap between age groups across months to spot demographic shifts.")
 
-    with t5:
-        img(STATE_DIR/"state_scatter.png")
-        note("How to read this chart",
-             "X = number of districts (state size). Y = avg daily growth %. "
-             "Bubble size = total enrolment. Colour = adult ratio (green = high adult coverage).<br><br>"
-             "<b>Top-left</b>: small states, high growth — campaigns working efficiently.<br>"
-             "<b>Bottom-right</b>: large states, slower growth — scale challenge.")
+        st.markdown("**State × month age 5–17 ratio heatmap**")
+        show("demo_age_ratio_heatmap.png")
+        note("Darker cells = higher proportion of age 5–17 in demographic enrolment. "
+             "Consistent dark rows = structurally young districts in that state.")
 
-    with t6:
-        col_f1, col_f2 = st.columns(2)
-        with col_f1:
-            search_state = st.text_input("Search state","")
-        with col_f2:
-            sort_col = st.selectbox("Sort by",[
-                "enrol_total","avg_enrol_growth","avg_adult_ratio",
-                "avg_minor_ratio","avg_dependency_ratio","district_count"])
-        disp = sdf.copy()
-        disp[disp.select_dtypes('float').columns] = disp.select_dtypes('float').round(4)
-        if search_state:
-            disp = disp[disp['state'].str.contains(search_state, case=False, na=False)]
-        disp = disp.sort_values(sort_col, ascending=False)
-        st.dataframe(disp, hide_index=True, use_container_width=True)
-        st.download_button("Download CSV", disp.to_csv(index=False),
-                           "state_summary.csv","text/csv")
+    # ── COMBINED ───────────────────────────────────────────────────────
+    with tab_combined:
+        st.markdown("<div style='font-size:13px;color:#6b7280;margin-bottom:12px;'>"
+                    "Cross-table analysis — all 3 tables on the same timeline, "
+                    "and a feature correlation matrix across bio × enrolment × demographic.</div>",
+                    unsafe_allow_html=True)
 
+        st.markdown("**All 3 tables — national daily totals on the same chart**")
+        show("all_tables_trend.png")
+        note("Biometric (purple) · Enrolment (green) · Demographic (amber). "
+             "All smoothed with a 7-day rolling average. "
+             "The gap between tables shows which enrolment type is leading or lagging nationally. "
+             "Shaded areas show the full range of daily values.")
+
+        st.markdown("**Feature correlation matrix — Bio × Enrolment × Demographic**")
+        show("correlation_heatmap.png")
+        note("Lower triangle only (symmetric matrix). Each cell = Pearson r between two state-level features.<br>"
+             "<b>Green (r → 1)</b> = strong positive correlation — these features move together.<br>"
+             "<b>Red (r → -1)</b> = strong negative correlation — one rises as the other falls.<br>"
+             "<b>Near-zero</b> = independent features, no linear relationship.<br>"
+             "Use this to identify which engineered features carry the same information "
+             "and which ones add independent signal for clustering or STGCN.")
 
 # ══════════════════════════════════════════════════════════════════════════
-# PAGE 2 — STATE COMPARISON
+# PAGE 5 — DISTRICT DEEP-DIVE
 # ══════════════════════════════════════════════════════════════════════════
+
+# ══════════════════════════════════════════════════════════════════════
+# STATE COMPARISON
+# ══════════════════════════════════════════════════════════════════════
 
 elif page == "State Comparison":
 
@@ -450,6 +528,10 @@ elif page == "State Comparison":
 # ══════════════════════════════════════════════════════════════════════════
 # PAGE 3 — TIME SERIES TRENDS
 # ══════════════════════════════════════════════════════════════════════════
+
+# ══════════════════════════════════════════════════════════════════════
+# TIME SERIES TRENDS
+# ══════════════════════════════════════════════════════════════════════
 
 elif page == "Time Series Trends":
 
@@ -618,6 +700,10 @@ elif page == "Time Series Trends":
 # ══════════════════════════════════════════════════════════════════════════
 # PAGE 4 — SPATIAL AUTOCORRELATION
 # ══════════════════════════════════════════════════════════════════════════
+
+# ══════════════════════════════════════════════════════════════════════
+# SPATIAL AUTOCORRELATION
+# ══════════════════════════════════════════════════════════════════════
 
 elif page == "Spatial Autocorrelation":
 
@@ -828,176 +914,9 @@ elif page == "Spatial Autocorrelation":
 # PAGE 2 — TABLE ANALYSIS
 # ══════════════════════════════════════════════════════════════════════════
 
-elif page == "Table Analysis":
-
-    st.markdown("""
-    <div class='section-title'>Table Analysis</div>
-    <div class='section-sub'>
-        Complete statistics and visualizations for all 3 Aadhaar tables
-        across all states and all dates — no district filter
-    </div>
-    """, unsafe_allow_html=True)
-
-    TD = TABLE_DIR
-    if not (TD / "bio_growth_trend.png").exists():
-        st.warning("Charts not found. Run table_analysis.py first.")
-        st.code("python table_analysis.py --db ../database/aadhar.duckdb")
-        st.stop()
-
-    def show(path, wide=True):
-        p = TD / path
-        if p.exists():
-            st.markdown("<div class='img-frame'>", unsafe_allow_html=True)
-            st.image(str(p), use_container_width=wide)
-            st.markdown("</div>", unsafe_allow_html=True)
-        else:
-            st.warning(f"{path} not found.")
-
-    def note(body):
-        st.markdown(
-            f"<div style='background:white;border:1px solid #e5e7eb;"
-            f"border-radius:10px;padding:14px 18px;font-size:13px;"
-            f"color:#6b7280;line-height:1.7;margin-top:8px;'>{body}</div>",
-            unsafe_allow_html=True)
-
-    tab_bio, tab_enrol, tab_demo, tab_combined = st.tabs([
-        "Biometric",
-        "Enrolment",
-        "Demographic",
-        "Combined",
-    ])
-
-    # ── BIOMETRIC ──────────────────────────────────────────────────────
-    with tab_bio:
-        st.markdown("<div style='font-size:13px;color:#6b7280;margin-bottom:12px;'>"
-                    "Biometric enrolment across all states and all dates — age structure, "
-                    "dependency ratios, growth momentum and volatility.</div>",
-                    unsafe_allow_html=True)
-
-        c1,c2 = st.columns(2)
-        with c1:
-            st.markdown("**National age group totals**")
-            show("bio_age_distribution.png")
-        with c2:
-            st.markdown("**Top 10 vs Bottom 10 states**")
-            show("bio_top_bottom.png")
-
-        st.markdown("**National daily trend — bio total with age breakdown**")
-        show("bio_growth_trend.png")
-        note("Bars show raw daily totals. Lines show 7-day rolling averages for total, "
-             "age 5–17 and age 17+. Vertical lines mark month boundaries.")
-
-        c3,c4 = st.columns(2)
-        with c3:
-            st.markdown("**State × month dependency heatmap**")
-            show("bio_state_heatmap.png")
-            note("Each cell = avg biometric dependency ratio for that state in that month. "
-                 "Darker = higher ratio of young enrolees relative to adults.")
-        with c4:
-            st.markdown("**Enrolment volatility by state**")
-            show("bio_volatility_map.png")
-            note("7-day std of biometric enrolment per state. "
-                 "Orange = above-median volatility — spiky, campaign-driven patterns.")
-
-        st.markdown("**Age 5–17 ratio vs dependency — state scatter**")
-        show("bio_ratio_scatter.png")
-        note("Each dot is one state. Bubble size = total bio enrolment. "
-             "Colour = avg daily growth rate (green = growing, red = declining).")
-
-    # ── ENROLMENT ──────────────────────────────────────────────────────
-    with tab_enrol:
-        st.markdown("<div style='font-size:13px;color:#6b7280;margin-bottom:12px;'>"
-                    "Enrolment across all states and all dates — age breakdowns, "
-                    "adult vs minor ratios, growth and volatility patterns.</div>",
-                    unsafe_allow_html=True)
-
-        c1,c2 = st.columns([1,2])
-        with c1:
-            st.markdown("**National age group share**")
-            show("enrol_age_pie.png")
-        with c2:
-            st.markdown("**Adult vs minor ratio — all states**")
-            show("enrol_adult_minor_bar.png")
-            note("Sorted by adult ratio. States at the top have higher adult saturation. "
-                 "States at the bottom still have a large share of child enrolments ongoing.")
-
-        st.markdown("**National daily trend — enrolment total by age group**")
-        show("enrol_trend.png")
-        note("All 4 series smoothed with a 7-day rolling average. "
-             "Age 18+ dominates nationally but watch for states where 0–5 spikes seasonally.")
-
-        c3,c4 = st.columns(2)
-        with c3:
-            st.markdown("**State × month growth rate heatmap**")
-            show("enrol_growth_heatmap.png")
-            note("Green = positive growth, Red = decline. "
-                 "Cells show avg daily % change for each state in each month.")
-        with c4:
-            st.markdown("**Growth momentum ranking**")
-            show("enrol_top_growth.png")
-            note("Orange = above-median growth. Purple dashed line = national median. "
-                 "States above it had active enrolment drives during the window.")
-
-        st.markdown("**Enrolment volatility by state**")
-        show("enrol_volatility.png")
-        note("High volatility = irregular enrolment bursts rather than steady flow. "
-             "Investigate the top volatile states for campaign-driven patterns.")
-
-    # ── DEMOGRAPHIC ────────────────────────────────────────────────────
-    with tab_demo:
-        st.markdown("<div style='font-size:13px;color:#6b7280;margin-bottom:12px;'>"
-                    "Demographic enrolment across all states and all dates — age ratios, "
-                    "dependency patterns and state comparisons.</div>",
-                    unsafe_allow_html=True)
-
-        c1,c2 = st.columns(2)
-        with c1:
-            st.markdown("**Dependency ratio — distribution + state ranking**")
-            show("demo_dependency_dist.png")
-            note("Left: distribution of avg dependency ratios across states. "
-                 "Right: per-state ranking. Orange = above national median.")
-        with c2:
-            st.markdown("**Age group split — top 30 states**")
-            show("demo_state_comparison.png")
-            note("Stacked bar showing age 5–17 vs age 17+ demographic enrolment. "
-                 "Sorted by total. Shows which states have younger demographic profiles.")
-
-        st.markdown("**National daily trend — demographic total by age group**")
-        show("demo_trend.png")
-        note("Smoothed daily totals for demographic enrolment. "
-             "Compare the gap between age groups across months to spot demographic shifts.")
-
-        st.markdown("**State × month age 5–17 ratio heatmap**")
-        show("demo_age_ratio_heatmap.png")
-        note("Darker cells = higher proportion of age 5–17 in demographic enrolment. "
-             "Consistent dark rows = structurally young districts in that state.")
-
-    # ── COMBINED ───────────────────────────────────────────────────────
-    with tab_combined:
-        st.markdown("<div style='font-size:13px;color:#6b7280;margin-bottom:12px;'>"
-                    "Cross-table analysis — all 3 tables on the same timeline, "
-                    "and a feature correlation matrix across bio × enrolment × demographic.</div>",
-                    unsafe_allow_html=True)
-
-        st.markdown("**All 3 tables — national daily totals on the same chart**")
-        show("all_tables_trend.png")
-        note("Biometric (purple) · Enrolment (green) · Demographic (amber). "
-             "All smoothed with a 7-day rolling average. "
-             "The gap between tables shows which enrolment type is leading or lagging nationally. "
-             "Shaded areas show the full range of daily values.")
-
-        st.markdown("**Feature correlation matrix — Bio × Enrolment × Demographic**")
-        show("correlation_heatmap.png")
-        note("Lower triangle only (symmetric matrix). Each cell = Pearson r between two state-level features.<br>"
-             "<b>Green (r → 1)</b> = strong positive correlation — these features move together.<br>"
-             "<b>Red (r → -1)</b> = strong negative correlation — one rises as the other falls.<br>"
-             "<b>Near-zero</b> = independent features, no linear relationship.<br>"
-             "Use this to identify which engineered features carry the same information "
-             "and which ones add independent signal for clustering or STGCN.")
-
-# ══════════════════════════════════════════════════════════════════════════
-# PAGE 5 — DISTRICT DEEP-DIVE
-# ══════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════
+# DISTRICT DEEP-DIVE
+# ══════════════════════════════════════════════════════════════════════
 
 elif page == "District Deep-Dive":
     import matplotlib.pyplot as plt
@@ -1215,6 +1134,10 @@ elif page == "District Deep-Dive":
 # ══════════════════════════════════════════════════════════════════════════
 # PAGE 6 — STGCN RESULTS
 # ══════════════════════════════════════════════════════════════════════════
+
+# ══════════════════════════════════════════════════════════════════════
+# STGCN RESULTS
+# ══════════════════════════════════════════════════════════════════════
 
 elif page == "STGCN Results":
     import matplotlib.pyplot as plt
@@ -1481,3 +1404,180 @@ elif page == "STGCN Results":
             Loss: MSE · Early stopping: patience=25
         </div>
         """, unsafe_allow_html=True)
+
+
+# ══════════════════════════════════════════════════════════════════════════
+# FORECAST
+# ══════════════════════════════════════════════════════════════════════════
+
+elif page == "Forecast":
+    import matplotlib.pyplot as plt
+    import matplotlib.ticker as mticker
+    import io
+
+    st.markdown("""
+    <div class='section-title'>STGCN Future Forecast</div>
+    <div class='section-sub'>
+        Autoregressive predictions beyond the dataset —
+        national enrolment trend, district-level forecasts and feature projections
+    </div>
+    """, unsafe_allow_html=True)
+
+    if not (FORECAST_DIR / "forecast_national.png").exists():
+        st.warning("Forecast outputs not found. Run stgcn_forecast.py first.")
+        st.code("python stgcn_forecast.py --steps 6")
+        st.stop()
+
+    def show(path, wide=True):
+        p = FORECAST_DIR / path
+        if p.exists():
+            st.markdown("<div class='img-frame'>", unsafe_allow_html=True)
+            st.image(str(p), use_container_width=wide)
+            st.markdown("</div>", unsafe_allow_html=True)
+        else:
+            st.warning(f"{path} not found.")
+
+    def note(body):
+        st.markdown(
+            f"<div style='background:white;border:1px solid #e5e7eb;"
+            f"border-radius:10px;padding:14px 18px;font-size:13px;"
+            f"color:#6b7280;line-height:1.7;'>{body}</div>",
+            unsafe_allow_html=True)
+
+    # ── Metric row from summary CSV ─────────────────────────────────────
+    summ_path = FORECAST_DIR / "forecast_summary.csv"
+    if summ_path.exists():
+        summ = pd.read_csv(summ_path)
+        n_steps = len(summ)
+        # Try to get step+1 and step+N national enrolment totals
+        enrol_col = [c for c in summ.columns if "enrol_total" in c]
+        if enrol_col:
+            v1  = float(summ.iloc[0][enrol_col[0]])
+            vN  = float(summ.iloc[-1][enrol_col[0]])
+            chg = ((vN - v1) / abs(v1) * 100) if abs(v1) > 1e-8 else 0
+        else:
+            v1, vN, chg = 0, 0, 0
+
+        st.markdown(f"""
+        <div class='metric-row'>
+            <div class='metric-card'>
+                <div class='metric-label'>Forecast horizon</div>
+                <div class='metric-value'>{n_steps}</div>
+                <div class='metric-note'>steps beyond dataset</div>
+            </div>
+            <div class='metric-card'>
+                <div class='metric-label'>Method</div>
+                <div class='metric-value' style='font-size:1rem;'>Autoregressive</div>
+                <div class='metric-note'>each step feeds next</div>
+            </div>
+            <div class='metric-card'>
+                <div class='metric-label'>Seed window</div>
+                <div class='metric-value'>6</div>
+                <div class='metric-note'>real time steps used</div>
+            </div>
+            <div class='metric-card'>
+                <div class='metric-label'>Districts forecast</div>
+                <div class='metric-value'>945</div>
+                <div class='metric-note'>simultaneously</div>
+            </div>
+            <div class='metric-card'>
+                <div class='metric-label'>Trend (step+1 → +{n_steps})</div>
+                <div class='metric-value' style='color:{"#1D9E75" if chg >= 0 else "#D85A30"};font-size:1.3rem;'>
+                    {"▲" if chg >= 0 else "▼"} {abs(chg):.1f}%
+                </div>
+                <div class='metric-note'>national enrolment change</div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    t1, t2, t3, t4, t5 = st.tabs([
+        "National forecast",
+        "Top districts",
+        "All features",
+        "Change heatmap",
+        "Forecast data",
+    ])
+
+    with t1:
+        show("forecast_national.png")
+        note(
+            "<b>How to read this chart</b><br><br>"
+            "The <b style='color:#534AB7;'>purple line</b> shows the last 20 real "
+            "observed time steps from the dataset (ending 2025-12-29).<br><br>"
+            "The <b style='color:#D85A30;'>dashed red line</b> is the STGCN autoregressive "
+            "forecast — each step's prediction is fed back as input for the next step.<br><br>"
+            "The shaded band shows ±8% uncertainty. Because autoregressive forecasts "
+            "compound errors step-by-step, confidence naturally decreases further out. "
+            "Steps +1 and +2 are most reliable; +5 and +6 are indicative trends only."
+        )
+
+    with t2:
+        show("forecast_top_districts.png")
+        note(
+            "Top 10 districts by total forecast enrolment across all steps. "
+            "Each line tracks one district's predicted enrolment per future time step.<br><br>"
+            "Flat lines = the model expects stable enrolment continuation. "
+            "Rising/falling lines = the model has detected a momentum trend in the seed window "
+            "and projects it forward."
+        )
+
+    with t3:
+        show("forecast_all_features.png")
+        note(
+            "National total (sum across all districts) for each of the 7 tensor features. "
+            "All values are on the z-scored scale used during training.<br><br>"
+            "Features that stay flat across steps indicate the model found no strong trend "
+            "in the seed window. Features with clear slope reflect momentum the model "
+            "detected in the last 6 real observations."
+        )
+
+    with t4:
+        show("forecast_change_heatmap.png")
+        note(
+            "For the top 30 districts: percentage change in predicted enrolment "
+            "from step+1 to each subsequent step.<br><br>"
+            "<b style='color:#1D9E75;'>Green</b> = predicted growth relative to step+1.<br>"
+            "<b style='color:#D85A30;'>Red</b> = predicted decline.<br><br>"
+            "This shows which districts are on a growth trajectory vs which are expected "
+            "to plateau or decline in the near term."
+        )
+
+    with t5:
+        csv_path = FORECAST_DIR / "forecast.csv"
+        if csv_path.exists():
+            fdf = pd.read_csv(csv_path)
+            col_f1, col_f2, col_f3 = st.columns(3)
+            with col_f1:
+                step_filter = st.selectbox("Step",
+                    ["All"] + sorted(fdf["step"].unique().tolist()))
+            with col_f2:
+                search_f = st.text_input("Search district", "", key="fc_search")
+            with col_f3:
+                sort_f = st.selectbox("Sort by",
+                    ["enrol_total", "bio_total", "enrol_minor_ratio", "enrol_adult_ratio"])
+
+            disp_f = fdf.copy()
+            if step_filter != "All":
+                disp_f = disp_f[disp_f["step"] == step_filter]
+            if search_f:
+                disp_f = disp_f[disp_f["district"].str.contains(
+                    search_f, case=False, na=False)]
+            if sort_f in disp_f.columns:
+                disp_f = disp_f.sort_values(sort_f, ascending=False)
+
+            st.dataframe(disp_f, hide_index=True, use_container_width=True)
+            st.download_button(
+                "Download forecast.csv",
+                fdf.to_csv(index=False),
+                "forecast.csv", "text/csv"
+            )
+
+            # National summary table
+            if summ_path.exists():
+                st.markdown("**National totals by step**")
+                st.dataframe(
+                    pd.read_csv(summ_path).round(3),
+                    hide_index=True, use_container_width=True
+                )
+        else:
+            st.warning("forecast.csv not found.")
