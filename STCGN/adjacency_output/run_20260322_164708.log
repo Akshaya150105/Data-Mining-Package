@@ -1,0 +1,104 @@
+16:47:08 INFO     ============================================================
+16:47:08 INFO     WEIGHTED ADJACENCY MATRIX BUILDER
+16:47:08 INFO     Using PREPROCESSED tables + REAL time series (no synthetic noise)
+16:47:08 INFO     alpha=0.50  sigma2=0.100  epsilon=0.100
+16:47:08 INFO     ============================================================
+16:47:08 INFO     
+── Step 0: Dates + schema ──
+16:47:08 INFO     Common dates across all 3 tables: 70  (2025-04-01 → 2025-12-29)
+16:47:08 INFO     ============================================================
+16:47:08 INFO     DATABASE SCHEMA — PREPROCESSED TABLES
+16:47:08 INFO     ============================================================
+16:47:08 INFO     All tables in DB: ['biometric_data', 'biometric_data_preprocessed', 'demographic_data', 'demographic_data_preprocessed', 'enrolment_data', 'enrolment_data_preprocessed']
+16:47:08 INFO       [biometric_data_preprocessed]  district_col=district  numeric_cols=17
+16:47:08 INFO       Sample:
+                                     id       date                        state  district pincode  bio_age_5_17  bio_age_17_  bio_total  age_5_ratio  age_17_ratio dominant_age_group  dependency_ratio  year  month month_name day_of_week  is_weekend  quarter  day_of_year  state_total  district_total  district_rank_in_state  daily_change  daily_pct_change  bio_total_7day_avg  bio_total_7day_std
+0  44bad1bb-1bbc-4329-a223-f2ed4cac251a 2025-03-01  Andaman and Nicobar Islands  Nicobars  744301           101           48        149     0.673333      0.320000                0-5          2.061224  2025      3      March    Saturday        True        1           60        20698            1813                     3.0           0.0          0.000000               149.0            0.000000
+1  e4149b13-b84f-494f-a6a2-f6b22e5067d0 2025-04-01  Andaman and Nicobar Islands  Nicobars  744301            28           41         69     0.400000      0.585714               5-17          0.666667  2025      4      April     Tuesday       False        2           91        20698            1813                     3.0         -80.0        -53.691275               109.0           56.568542
+16:47:08 INFO       [demographic_data_preprocessed]  district_col=district  numeric_cols=17
+16:47:08 INFO       Sample:
+                                     id       date                        state  district pincode  demo_age_5_17  demo_age_17_  demo_total  demo_age_5_ratio  demo_age_17_ratio  demo_dependency_ratio  year  month month_name day_of_week  is_weekend  quarter  day_of_year  state_total  district_total  district_rank_in_state  daily_change  daily_pct_change  demo_total_7day_avg  demo_total_7day_std
+0  263b4df4-c214-4373-9785-9db6b6c7a14c 2025-03-01  Andaman and Nicobar Islands  Nicobars  744301             16           180         196          0.081218           0.913706               0.088398  2025      3      March    Saturday        True        1           60         7246             791                     3.0           0.0               0.0                196.0                  0.0
+1  e3f8b646-5446-40e5-9195-f100d57542dd 2025-03-01  Andaman and Nicobar Islands  Nicobars  744301             16           180         196          0.081218           0.913706               0.088398  2025      3      March    Saturday        True        1           60         7246             791                     3.0           0.0               0.0                196.0                  0.0
+16:47:08 INFO       [enrolment_data_preprocessed]  district_col=district  numeric_cols=17
+16:47:08 INFO       Sample:
+                                     id       date                        state  district pincode  age_0_5  age_5_17  age_18_greater  enrol_total  enrol_minor_ratio  enrol_adult_ratio  year  month month_name day_of_week  is_weekend  quarter  day_of_year  state_total  district_total  district_rank_in_state  daily_change  daily_pct_change  enrol_total_7day_avg  enrol_total_7day_std
+0  0d395c8d-c34a-4baa-b885-22ac7ddef647 2025-09-01  Andaman and Nicobar Islands  Nicobars  744301        9         2               0           11           0.916667                0.0  2025      9  September      Monday       False        3          244          511              76                     3.0           0.0          0.000000                  11.0              0.000000
+1  ebfd8340-0e49-479b-9ee9-08c5f94e5a56 2025-09-02  Andaman and Nicobar Islands  Nicobars  744301        3         1               0            4           0.800000                0.0  2025      9  September     Tuesday       False        3          245          511              76                     3.0          -7.0        -63.636364                   7.5              4.949747
+16:47:08 INFO     
+── Step 1: Shapefile + fuzzy match ──
+16:47:08 INFO     Loading shapefile: ../Adjacency_marix/2011_Dist.shp
+16:47:08 INFO     Shapefile: 641 rows  district_col='DISTRICT'
+16:47:08 INFO     Unique DB districts (preprocessed): 772
+16:47:09 INFO       Matched 619 / 772  |  Unmatched: 153
+16:47:09 INFO     Final matched districts: 582
+16:47:09 INFO     
+── Step 2: W_distance ──
+16:47:09 INFO     Computing centroid distances for 582 districts ...
+16:47:11 INFO       W_distance: sparsity=18.2%  max=1.0000
+16:47:11 INFO     
+── Step 3: Profile feature df ──
+16:47:11 INFO     Profile dates (monthly): ['2025-04-01', '2025-05-01', '2025-06-01', '2025-07-01', '2025-09-01', '2025-11-01']
+16:47:11 INFO       [biometric_data_preprocessed] 717 rows × 13 feature cols
+16:47:12 INFO       [demographic_data_preprocessed] 720 rows × 13 feature cols
+16:47:12 INFO       [enrolment_data_preprocessed] 709 rows × 13 feature cols
+16:47:12 INFO     Profile feature matrix: (582, 39)
+16:47:12 INFO     
+── Step 4: W_similarity ──
+16:47:12 INFO       W_similarity: sparsity=0.2%  max=1.0000
+16:47:12 INFO     
+── Step 5: W_combined + Laplacian ──
+16:47:12 INFO       W_combined (alpha=0.50): sparsity=0.2%  max=0.9994
+16:47:12 INFO     
+── Step 6: Feature tensor X (REAL data, T=70) ──
+16:47:12 INFO     Building real tensor X [T=70, N=582, C=7] — NO synthetic noise
+16:47:26 INFO       Tensor filled: 40554 / 40740 slots (99.5%)
+16:47:26 INFO       Tensor X shape: (70, 582, 7)  dtype=float32
+16:47:26 INFO     
+── Step 7: Saving outputs ──
+16:47:27 INFO     Saved → W_distance.csv
+16:47:27 INFO     Saved → W_similarity.csv
+16:47:27 INFO     Saved → W_combined.csv
+16:47:28 INFO     Saved → L_normalised_laplacian.csv
+16:48:43 INFO     Saved heatmap → W_distance_heatmap.png
+16:50:33 INFO     Saved heatmap → W_similarity_heatmap.png
+16:51:32 INFO     Saved heatmap → W_combined_heatmap.png
+16:51:32 INFO     Saved tensor X (70, 582, 7) → feature_tensor_X.npy
+16:51:32 INFO     
+============================================================
+ADJACENCY MATRIX BUILD SUMMARY
+============================================================
+Districts (N)         : 582
+Time steps (T)        : 70  ← REAL dates (no synthetic noise)
+Feature channels (C)  : 7
+Tensor shape [T,N,C]  : (70, 582, 7)
+Date range            : 2025-04-01 → 2025-12-29
+
+W_distance:
+  Non-zero edges : 138488
+  Sparsity       : 18.2%
+  Max weight     : 1.0000
+
+W_similarity:
+  Non-zero edges : 169026
+  Sparsity       : 0.2%
+  Max weight     : 1.0000
+
+W_combined:
+  Non-zero edges : 169064
+  Sparsity       : 0.2%
+  Max weight     : 0.9994
+
+Tensor C-axis features:
+  C=0: bio_age_5_17
+  C=1: bio_age_17_
+  C=2: bio_total
+  C=3: demo_age_5_17
+  C=4: demo_age_17_
+  C=5: enrol_minor
+  C=6: enrol_adult
+
+Feed into stgcn_train.py:
+  --tensor     adjacency_output/feature_tensor_X.npy
+  --laplacian  adjacency_output/L_normalised_laplacian.csv
+  --districts  adjacency_output/district_order.csv

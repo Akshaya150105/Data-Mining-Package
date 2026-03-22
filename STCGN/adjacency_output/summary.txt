@@ -1,0 +1,37 @@
+============================================================
+ADJACENCY MATRIX BUILD SUMMARY
+============================================================
+Districts (N)         : 582
+Time steps (T)        : 70  ← REAL dates (no synthetic noise)
+Feature channels (C)  : 7
+Tensor shape [T,N,C]  : (70, 582, 7)
+Date range            : 2025-04-01 → 2025-12-29
+
+W_distance:
+  Non-zero edges : 138488
+  Sparsity       : 18.2%
+  Max weight     : 1.0000
+
+W_similarity:
+  Non-zero edges : 169026
+  Sparsity       : 0.2%
+  Max weight     : 1.0000
+
+W_combined:
+  Non-zero edges : 169064
+  Sparsity       : 0.2%
+  Max weight     : 0.9994
+
+Tensor C-axis features:
+  C=0: bio_age_5_17
+  C=1: bio_age_17_
+  C=2: bio_total
+  C=3: demo_age_5_17
+  C=4: demo_age_17_
+  C=5: enrol_minor
+  C=6: enrol_adult
+
+Feed into stgcn_train.py:
+  --tensor     adjacency_output/feature_tensor_X.npy
+  --laplacian  adjacency_output/L_normalised_laplacian.csv
+  --districts  adjacency_output/district_order.csv

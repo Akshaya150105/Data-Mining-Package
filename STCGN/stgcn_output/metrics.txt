@@ -1,0 +1,28 @@
+============================================================
+STGCN EVALUATION RESULTS
+============================================================
+
+All metrics on MinMax-normalised [0,1] scale.
+  MAE / RMSE : absolute error — lower is better
+  sMAPE      : symmetric MAPE, robust to near-zero actuals [0..200%]
+  R2         : explained variance (1.0 = perfect, >0.7 = good)
+  mMAPE      : MAPE only where actual > 0.05 (avoids blow-up)
+
+  Feature                           MAE     RMSE     sMAPE      R2     mMAPE
+  ------------------------------------------------------------------------
+  enrol_total                    0.0838   0.1414     51.0%  0.2523    46.1%
+  bio_total                      0.0854   0.1260     50.1%  0.2142    49.8%
+  bio_age5_ratio                 0.0836   0.1300     51.0%  0.2542    46.2%
+  enrol_minor_ratio              0.1176   0.1793     71.7%  0.3193    69.5%
+  enrol_adult_ratio              0.1605   0.3047     70.2%  0.4055    76.3%
+  bio_dependency                 0.1180   0.2234     68.5%  0.4510    58.5%
+  enrol_growth_pct (noisy)       0.0976   0.4855     79.2%  0.0087    58.2%
+  ------------------------------------------------------------------------
+  MEAN                           0.1067   0.2272     63.1%  0.2722     57.8%
+
+INTERPRETATION:
+  MAE 0.1067 = predictions within 10.67% of the z-scored feature range.
+  sMAPE 63.1% — target <40% for strong performance.
+  R2 0.2722 — WEAK — model close to predicting mean.
+  Note: enrol_growth_pct is inherently noisy; exclude from R2 average for cleaner signal.
+  Substantive R2 (ex growth): 0.3161

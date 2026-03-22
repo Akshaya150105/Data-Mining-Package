@@ -1,0 +1,7 @@
+C=0: bio_age_5_17
+C=1: bio_age_17_
+C=2: bio_total
+C=3: demo_age_5_17
+C=4: demo_age_17_
+C=5: enrol_minor
+C=6: enrol_adult

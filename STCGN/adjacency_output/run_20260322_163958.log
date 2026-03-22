@@ -1,0 +1,5 @@
+16:39:58 INFO     ============================================================
+16:39:58 INFO     WEIGHTED ADJACENCY MATRIX BUILDER
+16:39:58 INFO     Using PREPROCESSED tables + REAL time series (no synthetic noise)
+16:39:58 INFO     alpha=0.50  sigma2=0.100  epsilon=0.100
+16:39:58 INFO     ============================================================

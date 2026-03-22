@@ -1,0 +1,30 @@
+16:43:29 INFO     ============================================================
+16:43:29 INFO     WEIGHTED ADJACENCY MATRIX BUILDER
+16:43:29 INFO     Using PREPROCESSED tables + REAL time series (no synthetic noise)
+16:43:29 INFO     alpha=0.50  sigma2=0.100  epsilon=0.100
+16:43:29 INFO     ============================================================
+16:43:29 INFO     
+── Step 0: Dates + schema ──
+16:43:29 INFO     Common dates across all 3 tables: 70  (2025-04-01 → 2025-12-29)
+16:43:29 INFO     ============================================================
+16:43:29 INFO     DATABASE SCHEMA — PREPROCESSED TABLES
+16:43:29 INFO     ============================================================
+16:43:29 INFO     All tables in DB: ['biometric_data', 'biometric_data_preprocessed', 'demographic_data', 'demographic_data_preprocessed', 'enrolment_data', 'enrolment_data_preprocessed']
+16:43:29 INFO       [biometric_data_preprocessed]  district_col=district  numeric_cols=17
+16:43:29 INFO       Sample:
+                                     id       date                        state  district pincode  bio_age_5_17  bio_age_17_  bio_total  age_5_ratio  age_17_ratio dominant_age_group  dependency_ratio  year  month month_name day_of_week  is_weekend  quarter  day_of_year  state_total  district_total  district_rank_in_state  daily_change  daily_pct_change  bio_total_7day_avg  bio_total_7day_std
+0  44bad1bb-1bbc-4329-a223-f2ed4cac251a 2025-03-01  Andaman and Nicobar Islands  Nicobars  744301           101           48        149     0.673333      0.320000                0-5          2.061224  2025      3      March    Saturday        True        1           60        20698            1813                     3.0           0.0          0.000000               149.0            0.000000
+1  e4149b13-b84f-494f-a6a2-f6b22e5067d0 2025-04-01  Andaman and Nicobar Islands  Nicobars  744301            28           41         69     0.400000      0.585714               5-17          0.666667  2025      4      April     Tuesday       False        2           91        20698            1813                     3.0         -80.0        -53.691275               109.0           56.568542
+16:43:29 INFO       [demographic_data_preprocessed]  district_col=district  numeric_cols=17
+16:43:29 INFO       Sample:
+                                     id       date                        state  district pincode  demo_age_5_17  demo_age_17_  demo_total  demo_age_5_ratio  demo_age_17_ratio  demo_dependency_ratio  year  month month_name day_of_week  is_weekend  quarter  day_of_year  state_total  district_total  district_rank_in_state  daily_change  daily_pct_change  demo_total_7day_avg  demo_total_7day_std
+0  263b4df4-c214-4373-9785-9db6b6c7a14c 2025-03-01  Andaman and Nicobar Islands  Nicobars  744301             16           180         196          0.081218           0.913706               0.088398  2025      3      March    Saturday        True        1           60         7246             791                     3.0           0.0               0.0                196.0                  0.0
+1  e3f8b646-5446-40e5-9195-f100d57542dd 2025-03-01  Andaman and Nicobar Islands  Nicobars  744301             16           180         196          0.081218           0.913706               0.088398  2025      3      March    Saturday        True        1           60         7246             791                     3.0           0.0               0.0                196.0                  0.0
+16:43:29 INFO       [enrolment_data_preprocessed]  district_col=district  numeric_cols=17
+16:43:29 INFO       Sample:
+                                     id       date                        state  district pincode  age_0_5  age_5_17  age_18_greater  enrol_total  enrol_minor_ratio  enrol_adult_ratio  year  month month_name day_of_week  is_weekend  quarter  day_of_year  state_total  district_total  district_rank_in_state  daily_change  daily_pct_change  enrol_total_7day_avg  enrol_total_7day_std
+0  0d395c8d-c34a-4baa-b885-22ac7ddef647 2025-09-01  Andaman and Nicobar Islands  Nicobars  744301        9         2               0           11           0.916667                0.0  2025      9  September      Monday       False        3          244          511              76                     3.0           0.0          0.000000                  11.0              0.000000
+1  ebfd8340-0e49-479b-9ee9-08c5f94e5a56 2025-09-02  Andaman and Nicobar Islands  Nicobars  744301        3         1               0            4           0.800000                0.0  2025      9  September     Tuesday       False        3          245          511              76                     3.0          -7.0        -63.636364                   7.5              4.949747
+16:43:29 INFO     
+── Step 1: Shapefile + fuzzy match ──
+16:43:29 INFO     Loading shapefile: Adjacency_marix/2011_Dist.shp
