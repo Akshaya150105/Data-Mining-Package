@@ -3,5 +3,6 @@ __pycache__/
 *.pyc
 database/logs/
 database/reports/
+database/*.duckdb
 adjacency_output/unmatched**.log
 env/

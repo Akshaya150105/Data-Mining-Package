@@ -10,6 +10,9 @@ for table in TABLES:
     print(f"  TABLE: {table}")
     print(f"{'='*60}")
     df = con.execute(f"SELECT * FROM {table} LIMIT 5").df()
+    # df = con.execute(f"SELECT date FROM {table} WHERE CAST(SPLIT_PART(date, '-', 2) AS INT) > 12").df()
+    # df = con.execute(f"""
+    # SELECT date, YEAR(date), MONTH(date), DAY(date) FROM {table} LIMIT 20""").df()
     print(df.to_string(index=False))
 
 con.close()

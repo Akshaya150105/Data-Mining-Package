@@ -7,3 +7,5 @@ netwrorkx
 scipy
 python-calamine
 folium
+tensorly
+torch

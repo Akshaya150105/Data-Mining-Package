@@ -1,0 +1,21 @@
+python build_district_graph.py  --shp ../Adjacency_marix/2011_Dist.shp ^--db ../database/aadhar.duckdb ^--alpha 0.5 ^--sigma2 0.1 ^--epsilon 0.1
+python build_biometric_weekly_tensor.py
+python build_enrolment_weekly_tensor.py
+
+python train_stgcn.py ^
+  --tensor biometric_weekly_output/feature_tensor_X.npy ^
+  --laplacian graph_output/L_normalised_laplacian.csv ^
+  --districts graph_output/district_order.csv ^
+  --week_index biometric_weekly_output/week_index.csv ^
+  --features biometric_weekly_output/tensor_feature_columns.csv ^
+  --target bio_total ^
+  --output_dir biometric_model_output
+
+python train_stgcn.py ^
+  --tensor enrolment_weekly_output/feature_tensor_X.npy ^
+  --laplacian graph_output/L_normalised_laplacian.csv ^
+  --districts graph_output/district_order.csv ^
+  --week_index enrolment_weekly_output/week_index.csv ^
+  --features enrolment_weekly_output/tensor_feature_columns.csv ^
+  --target enrol_total ^
+  --output_dir enrolment_model_output
