@@ -72,7 +72,7 @@ pip install geopandas duckdb numpy pandas scipy matplotlib seaborn rapidfuzz sci
 
 ---
 
-## 🚀 Full Pipeline (Run in Order)
+## 🚀 Full Pipeline
 
 ---
 
@@ -84,8 +84,8 @@ python build_district_graph.py --shp ..\Adjacency_marix\2011_Dist.shp --db ..\da
 
 ### Output (`graph_output/`)
 
-* `L_normalised_laplacian.csv` ✅ (used by model)
-* `district_order.csv` ✅ (VERY IMPORTANT)
+* `L_normalised_laplacian.csv`  
+* `district_order.csv` 
 * `W_distance.csv`, `W_similarity.csv`, `W_combined.csv`
 
 ---
