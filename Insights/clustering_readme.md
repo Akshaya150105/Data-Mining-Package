@@ -54,8 +54,7 @@ flowchart TD
 | `enrol__` | `enrol_minor_ratio`, `enrol_adult_ratio`, `enrol_total_7day_std`, `district_rank_in_state`, `daily_pct_change` | 5 |
 | | **Total** | **17** |
 
-> [!NOTE]
-> The `ALL_FEATURES` list programmatically cross-products each prefix with its feature list, yielding the complete 17-feature vector per district (the code defines 18 slots but the enrolment group has 5 features).
+
 
 ---
 
@@ -63,7 +62,7 @@ flowchart TD
 
 1. **Cleaning** — replaces `inf` / `NaN` values with `0`
 2. **Standardisation** — `sklearn.preprocessing.StandardScaler` (zero mean, unit variance)
-3. **PCA** — reduces to **2 components** for visualisation; prints explained variance
+3. **PCA** — reduces to **2 components** for visualisation,prints explained variance
 
 Returns both `X_scaled` (full-dimensional, for K-Means) and `X_pca` (2D, for DBSCAN and plots).
 
