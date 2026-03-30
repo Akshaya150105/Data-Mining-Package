@@ -29,10 +29,9 @@ Aadhaar is the world's largest biometric identity programme. The raw enrolment d
 
 This project builds a complete data mining pipeline to extract geographic, demographic and temporal knowledge from that data:
 
-- **Who** is lagging — district clustering identifies 5 behavioural archetypes
-- **Where** patterns cluster — spatial autocorrelation via Moran's I
-- **When** behaviour shifts — time series analysis across 70 dates
-- **What next** — STGCN graph neural network forecasts future enrolment per district
+- **Who** is lagging  district- clustering identifies 5 behavioural archetypes
+- **Where** patterns cluster- spatial autocorrelation via Moran's I
+- **When** behaviour- shifts time series analysis across 70 dates
 
 ---
 
@@ -127,7 +126,6 @@ All 3 raw tables are stored in `aadhar.duckdb`. Preprocessed outputs are written
 ## Stage 2 — Preprocessing & Feature Engineering
 
 **Script:** `preprocessing.py`  
-**Output tables:** `biometric_data_preprocessed`, `demographic_data_preprocessed`, `enrolment_data_preprocessed`
 
 ### Preprocessing steps
 
