@@ -1,6 +1,7 @@
 import streamlit as st
 from pathlib import Path
 import pandas as pd
+import numpy as np
 
 st.set_page_config(page_title="Aadhaar Data Mining", page_icon="🗺️",
                    layout="wide", initial_sidebar_state="expanded")
@@ -35,14 +36,11 @@ STATE_DIR      = Path("state_output")
 TIMESERIES_DIR = Path("timeseries_output")
 SPATIAL_DIR    = Path("spatial_output")
 TABLE_DIR  = Path("table_output")
-STGCN_DIR     = Path("stgcn_output")
+STGCN_BASE_DIR     = Path("..") / "NEW_STGCN"
+BIO_MODEL_DIR = Path("../NEW_STGCN/biometric_model_output")
+ENROL_MODEL_DIR = Path("../NEW_STGCN/enrolment_model_output")
 FORECAST_DIR  = Path("forecast_output")
-STATE_DIR      = Path("state_output")
-TIMESERIES_DIR = Path("timeseries_output")
-SPATIAL_DIR    = Path("spatial_output")
-TABLE_DIR  = Path("table_output")
-STGCN_DIR     = Path("stgcn_output")
-FORECAST_DIR  = Path("forecast_output")
+
 
 # ── Sidebar ──────────────────────────────────────────────────────────────
 with st.sidebar:
@@ -1135,275 +1133,229 @@ elif page == "District Deep-Dive":
 # PAGE 6 — STGCN RESULTS
 # ══════════════════════════════════════════════════════════════════════════
 
+
 # ══════════════════════════════════════════════════════════════════════
 # STGCN RESULTS
 # ══════════════════════════════════════════════════════════════════════
 
 elif page == "STGCN Results":
     import matplotlib.pyplot as plt
-    import matplotlib.ticker as mticker
     import io
 
     st.markdown("""
     <div class='section-title'>STGCN Results</div>
     <div class='section-sub'>
-        Spatio-Temporal Graph Convolutional Network —
-        district-level Aadhaar enrolment forecasting across 945 districts
+        Weekly district-level forecasting results loaded from the separate
+        biometric and enrolment STGCN model folders in <code>../NEW_STGCN</code>
     </div>
     """, unsafe_allow_html=True)
 
-    if not (STGCN_DIR / "metrics.txt").exists():
-        st.warning("Run stgcn_train.py first to generate results.")
-        st.code("python stgcn_train.py")
+    MODEL_DIRS = {
+        "Biometric Model": BIO_MODEL_DIR,
+        "Enrolment Model": ENROL_MODEL_DIR,
+    }
+
+    model_name = st.radio(
+        "Choose model",
+        list(MODEL_DIRS.keys()),
+        horizontal=True,
+    )
+    model_dir = MODEL_DIRS[model_name]
+    target_name = "bio_total" if "Biometric" in model_name else "enrol_total"
+
+    required = [
+        model_dir / "metrics.txt",
+        model_dir / "district_metrics.csv",
+        model_dir / "predictions_by_district_week.csv",
+    ]
+    missing = [p.name for p in required if not p.exists()]
+    if missing:
+        st.warning(
+            f"Could not find required STGCN result files in {model_dir}. Missing: {', '.join(missing)}")
+        st.code(
+    f"""Expected files inside:{model_dir}
+        - metrics.txt
+        - district_metrics.csv
+        - predictions_by_district_week.csv
+
+        Optional:
+        - loss_curve.png
+        - best_model.pt""")
         st.stop()
 
-    # ── Parse metrics.txt ──────────────────────────────────────────────
-    metrics_txt = (STGCN_DIR / "metrics.txt").read_text()
-    rows_parsed = []
-    for line in metrics_txt.split("\n"):
-        line = line.strip()
-        if not line or line.startswith(("=","All","MAE","sMAPE","R2","mMAPE",
-                                        "-","MEAN","INTERP","Note","Subst","  R2")):
-            continue
-        parts = line.split()
-        # format: Feature MAE RMSE sMAPE% R2 mMAPE%
-        if len(parts) >= 5:
+    metrics_text = (model_dir / "metrics.txt").read_text(encoding="utf-8")
+    district_df = pd.read_csv(model_dir / "district_metrics.csv")
+    pred_df = pd.read_csv(model_dir / "predictions_by_district_week.csv")
+    pred_df["week_start"] = pd.to_datetime(pred_df["week_start"])
+
+    def parse_simple_metrics(txt):
+        vals = {}
+        for line in txt.splitlines():
+            if "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            key = key.strip().lower()
+            value = value.strip().replace("%", "")
             try:
-                fname = parts[0] if "(noisy)" not in line else parts[0]+" (noisy)"
-                # find numeric values: MAE RMSE sMAPE R2 [mMAPE]
-                nums = []
-                for p in parts[1:]:
-                    try: nums.append(float(p.strip("%")))
-                    except: pass
-                if len(nums) >= 4:
-                    rows_parsed.append({
-                        "Feature": fname,
-                        "MAE":   nums[0],
-                        "RMSE":  nums[1],
-                        "sMAPE": nums[2],
-                        "R2":    nums[3],
-                    })
-            except: pass
+                vals[key] = float(value)
+            except Exception:
+                pass
+        return vals
 
-    # Extract R2 values for key metrics display
-    r2_vals   = [r["R2"] for r in rows_parsed if "(noisy)" not in r["Feature"]]
-    mae_vals  = [r["MAE"] for r in rows_parsed]
-    mean_r2   = float(np.mean(r2_vals)) if r2_vals else 0.0
-    mean_mae  = float(np.mean(mae_vals)) if mae_vals else 0.0
-    best_feat = max(rows_parsed, key=lambda x: x["R2"]) if rows_parsed else {}
-    worst_feat= min([r for r in rows_parsed if "(noisy)" not in r["Feature"]],
-                    key=lambda x: x["R2"]) if rows_parsed else {}
+    parsed = parse_simple_metrics(metrics_text)
+    overall_mae = parsed.get("mae", float(district_df["mae"].mean()) if "mae" in district_df else 0.0)
+    overall_rmse = parsed.get("rmse", float(district_df["rmse"].mean()) if "rmse" in district_df else 0.0)
 
-    # ── KPI banner ─────────────────────────────────────────────────────
-    r2_label = ("Good" if mean_r2 > 0.5 else
-                "Moderate" if mean_r2 > 0.3 else "Building")
+    n_districts = pred_df["district"].nunique()
+    n_weeks = pred_df["week_start"].nunique()
+    top_district = district_df.sort_values("mae").iloc[0]["district"] if not district_df.empty else "—"
+
     st.markdown(f"""
     <div class='metric-row'>
         <div class='metric-card'>
-            <div class='metric-label'>Mean R² (ex growth)</div>
-            <div class='metric-value'>{mean_r2:.3f}</div>
-            <div class='metric-note'>{r2_label} — variance explained</div>
+            <div class='metric-label'>Model</div>
+            <div class='metric-value' style='font-size:1.05rem;'>{model_name}</div>
+            <div class='metric-note'>target = {target_name}</div>
         </div>
         <div class='metric-card'>
-            <div class='metric-label'>Mean MAE</div>
-            <div class='metric-value'>{mean_mae:.4f}</div>
-            <div class='metric-note'>on z-scored [0,1] scale</div>
+            <div class='metric-label'>Overall MAE</div>
+            <div class='metric-value'>{overall_mae:.3f}</div>
+            <div class='metric-note'>lower is better</div>
         </div>
         <div class='metric-card'>
-            <div class='metric-label'>Best feature</div>
-            <div class='metric-value' style='font-size:1rem;'>{best_feat.get("Feature","—")[:18]}</div>
-            <div class='metric-note'>R² = {best_feat.get("R2",0):.3f}</div>
+            <div class='metric-label'>Overall RMSE</div>
+            <div class='metric-value'>{overall_rmse:.3f}</div>
+            <div class='metric-note'>penalises larger errors</div>
         </div>
         <div class='metric-card'>
             <div class='metric-label'>Districts</div>
-            <div class='metric-value'>945</div>
-            <div class='metric-note'>forecasted simultaneously</div>
+            <div class='metric-value'>{n_districts}</div>
+            <div class='metric-note'>evaluated in test period</div>
         </div>
         <div class='metric-card'>
-            <div class='metric-label'>Training sequences</div>
-            <div class='metric-value'>37</div>
-            <div class='metric-note'>T=70 dates, T_in=6</div>
-        </div>
-        <div class='metric-card'>
-            <div class='metric-label'>Architecture</div>
-            <div class='metric-value' style='font-size:1rem;'>STGCN</div>
-            <div class='metric-note'>2 ST-Conv blocks · K=4 · C=7</div>
+            <div class='metric-label'>Best district</div>
+            <div class='metric-value' style='font-size:1rem;'>{str(top_district)[:18]}</div>
+            <div class='metric-note'>lowest MAE</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
-
-    def show(path, wide=True):
-        p = STGCN_DIR / path
-        if p.exists():
-            st.markdown("<div class='img-frame'>", unsafe_allow_html=True)
-            st.image(str(p), use_container_width=wide)
-            st.markdown("</div>", unsafe_allow_html=True)
-        else:
-            st.warning(f"{path} not found.")
 
     def note(body):
         st.markdown(
             f"<div style='background:white;border:1px solid #e5e7eb;"
             f"border-radius:10px;padding:14px 18px;font-size:13px;"
             f"color:#6b7280;line-height:1.7;'>{body}</div>",
-            unsafe_allow_html=True)
+            unsafe_allow_html=True,
+        )
 
-    t1,t2,t3,t4,t5 = st.tabs([
-        "R² by feature",
+    tabs = st.tabs([
+        "National trend",
         "Loss curve",
-        "Predicted vs actual",
-        "District errors",
-        "Full metrics",
+        "District leaderboard",
+        "District deep-dive",
+        "Raw files",
     ])
 
-    # ── Tab 1: R² bar chart ─────────────────────────────────────────────
-    with t1:
-        if rows_parsed:
-            fig, ax = plt.subplots(figsize=(9,5), facecolor="#f9f8f6")
-            ax.set_facecolor("#ffffff")
-            feats = [r["Feature"][:22] for r in rows_parsed]
-            r2s   = [r["R2"] for r in rows_parsed]
-            colors = ["#1D9E75" if r > 0.4 else
-                      "#BA7517" if r > 0.2 else
-                      "#D85A30" for r in r2s]
-            bars = ax.barh(feats, r2s, color=colors, alpha=0.85, height=0.6)
-            ax.axvline(0,    color="#9ca3af", linewidth=0.8)
-            ax.axvline(0.3,  color="#534AB7", linewidth=1, linestyle="--",
-                       alpha=0.6, label="R²=0.3 (moderate)")
-            ax.axvline(0.5,  color="#1D9E75", linewidth=1, linestyle="--",
-                       alpha=0.6, label="R²=0.5 (good)")
-            for bar, v in zip(bars, r2s):
-                ax.text(max(v+0.01, 0.01), bar.get_y()+bar.get_height()/2,
-                        f"{v:.3f}", va="center", fontsize=9, color="#374151")
-            ax.set_xlabel("R² (explained variance)", fontsize=10)
-            ax.set_title("STGCN — R² per feature",
-                         fontsize=13, fontweight="bold", loc="left", pad=10)
-            ax.legend(fontsize=8)
-            for sp in ["top","right"]: ax.spines[sp].set_visible(False)
-            for sp in ["bottom","left"]: ax.spines[sp].set_color("#e5e7eb")
-            ax.grid(True, axis="x", color="#f0f0f0")
-            plt.tight_layout()
-            buf = io.BytesIO()
-            plt.savefig(buf, format="png", dpi=150,
-                        bbox_inches="tight", facecolor="#f9f8f6")
-            plt.close(); buf.seek(0)
+    with tabs[0]:
+        weekly = pred_df.groupby("week_start")[["actual", "predicted"]].sum().reset_index()
+        fig, ax = plt.subplots(figsize=(10, 4.8), facecolor="#f9f8f6")
+        ax.set_facecolor("#ffffff")
+        ax.plot(weekly["week_start"], weekly["actual"], linewidth=2.2, label="Actual")
+        ax.plot(weekly["week_start"], weekly["predicted"], linewidth=2.2, linestyle="--", label="Predicted")
+        ax.set_title(f"{model_name} — national weekly actual vs predicted", fontsize=13, fontweight="bold", loc="left", pad=10)
+        ax.set_xlabel("Week")
+        ax.set_ylabel(target_name)
+        ax.grid(True, color="#f0f0f0")
+        ax.legend()
+        for sp in ["top", "right"]:
+            ax.spines[sp].set_visible(False)
+        for sp in ["bottom", "left"]:
+            ax.spines[sp].set_color("#e5e7eb")
+        buf = io.BytesIO()
+        plt.tight_layout()
+        plt.savefig(buf, format="png", dpi=150, bbox_inches="tight", facecolor="#f9f8f6")
+        plt.close(fig)
+        buf.seek(0)
+        st.markdown("<div class='img-frame'>", unsafe_allow_html=True)
+        st.image(buf, use_container_width=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+        note(
+            "This chart aggregates the model output across all districts for each forecast week. "
+            "The solid line shows the real test-period total, while the dashed line shows the STGCN prediction. "
+            "A close overlap means the model is capturing national movement well even though it was trained district-wise."
+        )
+
+    with tabs[1]:
+        loss_path = model_dir / "loss_curve.png"
+        if loss_path.exists():
             st.markdown("<div class='img-frame'>", unsafe_allow_html=True)
-            st.image(buf, use_container_width=True)
+            st.image(str(loss_path), use_container_width=True)
             st.markdown("</div>", unsafe_allow_html=True)
             note(
-                "<b>Reading R²:</b> 1.0 = perfect prediction, 0.0 = predicting the mean, "
-                "negative = worse than the mean.<br><br>"
-                "<b style='color:#1D9E75;'>Green</b> = good (R² > 0.4) — "
-                "model captures district variation well.<br>"
-                "<b style='color:#BA7517;'>Amber</b> = moderate (0.2–0.4).<br>"
-                "<b style='color:#D85A30;'>Red</b> = weak — feature is too noisy "
-                "or lacks sufficient temporal signal.<br><br>"
-                "enrol_growth_pct is expected to be red — daily % change is an "
-                "inherently noisy derivative signal with R²≈0.009."
+                "Purple is the training loss and green is the validation loss. "
+                "The validation curve is the key one to watch: when it stops improving, the model has extracted most of the useful signal from the weekly sequences."
             )
-
-    # ── Tab 2: Loss curve ───────────────────────────────────────────────
-    with t2:
-        show("loss_curve.png")
-        note(
-            "Training loss (purple) and validation loss (green) over epochs. "
-            "The model uses <b>CosineAnnealingWarmRestarts</b> — LR oscillates "
-            "smoothly rather than decaying monotonically, which helps escape "
-            "local minima on small datasets.<br><br>"
-            "If val loss stops improving while train loss keeps dropping, "
-            "the model is overfitting. Early stopping (patience=25) prevents this."
-        )
-
-    # ── Tab 3: Predicted vs actual ──────────────────────────────────────
-    with t3:
-        show("pred_vs_actual.png")
-        note(
-            "6 randomly sampled districts — predicted enrolment (dashed red) vs "
-            "actual enrolment (solid purple) on the test set.<br><br>"
-            "Each subplot shows the model's forecast across test time steps. "
-            "MAE per district is shown in the title. "
-            "Districts with low MAE have consistent enrolment patterns "
-            "(clusters 0, 1, 3). "
-            "High-MAE districts are typically from cluster 2 (campaign spikes) "
-            "or cluster 4 (border/restricted zones)."
-        )
-
-    # ── Tab 4: District errors ──────────────────────────────────────────
-    with t4:
-        csv_path = STGCN_DIR / "per_district_error.csv"
-        if csv_path.exists():
-            edf = pd.read_csv(csv_path)
-
-            col_f1, col_f2 = st.columns(2)
-            with col_f1:
-                search_e = st.text_input("Search district", "", key="stgcn_search")
-            with col_f2:
-                sort_e = st.selectbox("Sort by", ["mae","smape","r2"],
-                                      key="stgcn_sort")
-
-            disp_e = edf.copy()
-            if search_e:
-                disp_e = disp_e[disp_e["district"].str.contains(
-                    search_e, case=False, na=False)]
-            asc = sort_e == "r2"  # r2: higher is better so sort desc
-            disp_e = disp_e.sort_values(sort_e, ascending=asc)
-            disp_e[["mae","smape","r2"]] = disp_e[["mae","smape","r2"]].round(4)
-            st.dataframe(disp_e, hide_index=True, use_container_width=True)
-            st.download_button("Download per_district_error.csv",
-                               disp_e.to_csv(index=False),
-                               "per_district_error.csv", "text/csv")
-
-            # Quick inline MAE distribution chart
-            fig, ax = plt.subplots(figsize=(8, 3), facecolor="#f9f8f6")
-            ax.set_facecolor("#ffffff")
-            ax.hist(edf["mae"].dropna(), bins=50,
-                    color="#534AB7", alpha=0.75, edgecolor="white")
-            ax.axvline(edf["mae"].mean(), color="#D85A30", linewidth=1.5,
-                       linestyle="--",
-                       label=f"Mean MAE = {edf['mae'].mean():.4f}")
-            ax.set_xlabel("MAE (enrol_total)", fontsize=9)
-            ax.set_title("Per-district MAE distribution",
-                         fontsize=10, fontweight="bold", loc="left")
-            ax.legend(fontsize=8)
-            for sp in ["top","right"]: ax.spines[sp].set_visible(False)
-            for sp in ["bottom","left"]: ax.spines[sp].set_color("#e5e7eb")
-            ax.grid(True, axis="y", color="#f0f0f0")
-            plt.tight_layout()
-            buf = io.BytesIO()
-            plt.savefig(buf, format="png", dpi=150,
-                        bbox_inches="tight", facecolor="#f9f8f6")
-            plt.close(); buf.seek(0)
-            st.markdown("<div class='img-frame'>", unsafe_allow_html=True)
-            st.image(buf, use_container_width=True)
-            st.markdown("</div>", unsafe_allow_html=True)
-            note("Most districts cluster near the mean MAE. "
-                 "The long right tail is volatile / border districts. "
-                 "Cross-reference with the Clustering page — "
-                 "high-error districts are typically Cluster 2 or Cluster 4.")
         else:
-            st.warning("per_district_error.csv not found.")
+            st.info(f"loss_curve.png was not found in {model_dir}. The rest of the evaluation is still available from the saved CSV files.")
 
-    # ── Tab 5: Full metrics text ────────────────────────────────────────
-    with t5:
-        st.code(metrics_txt, language="text")
-        st.markdown("""
-        <div style='background:white;border:1px solid #e5e7eb;
-                    border-radius:10px;padding:16px 20px;
-                    font-size:13px;color:#6b7280;line-height:1.8;'>
-            <b style='color:#1a1a2e;'>Model configuration</b><br><br>
-            Architecture: STGCN with 2 Spatio-Temporal Conv blocks<br>
-            Graph conv: Chebyshev K=4 (4-hop neighbourhood)<br>
-            Temporal conv: kernel Kt=2 with GLU gating<br>
-            Input window: T_in=6 time steps<br>
-            Prediction: 1 step ahead per district<br>
-            Nodes: 945 districts · Features: C=7 per node<br>
-            Adjacency: W = 0.5×W_distance + 0.5×W_similarity<br>
-            Normalisation: z-score per feature (mean=0, std=1)<br>
-            Training: 37 sequences · Validation: 12 · Test: 13<br>
-            Optimiser: Adam · Scheduler: CosineAnnealingWarmRestarts<br>
-            Loss: MSE · Early stopping: patience=25
-        </div>
-        """, unsafe_allow_html=True)
+    with tabs[2]:
+        sort_metric = st.selectbox("Sort districts by", ["mae", "rmse"], key="stgcn_sort_metric")
+        ascending = True
+        view_df = district_df.sort_values(sort_metric, ascending=ascending).copy()
+        view_df[[c for c in ["mae", "rmse"] if c in view_df.columns]] = view_df[[c for c in ["mae", "rmse"] if c in view_df.columns]].round(3)
+        st.dataframe(view_df, hide_index=True, use_container_width=True)
+        note(
+            "This table ranks districts by forecast quality. Lower MAE and RMSE indicate closer predictions. "
+            "Use this to identify districts where the model is consistently stable versus districts with more irregular behaviour."
+        )
+
+    with tabs[3]:
+        district_options = sorted(pred_df["district"].dropna().unique().tolist())
+        selected_district = st.selectbox("Select district", district_options, key="stgcn_district_pick")
+        sub = pred_df[pred_df["district"] == selected_district].sort_values("week_start")
+        fig, ax = plt.subplots(figsize=(10, 4.4), facecolor="#f9f8f6")
+        ax.set_facecolor("#ffffff")
+        ax.plot(sub["week_start"], sub["actual"], linewidth=2.2, label="Actual")
+        ax.plot(sub["week_start"], sub["predicted"], linewidth=2.2, linestyle="--", label="Predicted")
+        ax.set_title(f"{selected_district} — weekly actual vs predicted", fontsize=13, fontweight="bold", loc="left", pad=10)
+        ax.set_xlabel("Week")
+        ax.set_ylabel(target_name)
+        ax.grid(True, color="#f0f0f0")
+        ax.legend()
+        for sp in ["top", "right"]:
+            ax.spines[sp].set_visible(False)
+        for sp in ["bottom", "left"]:
+            ax.spines[sp].set_color("#e5e7eb")
+        buf = io.BytesIO()
+        plt.tight_layout()
+        plt.savefig(buf, format="png", dpi=150, bbox_inches="tight", facecolor="#f9f8f6")
+        plt.close(fig)
+        buf.seek(0)
+        st.markdown("<div class='img-frame'>", unsafe_allow_html=True)
+        st.image(buf, use_container_width=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+        c1, c2, c3 = st.columns(3)
+        c1.metric("District MAE", f"{sub['abs_error'].mean():.3f}")
+        c2.metric("Best week error", f"{sub['abs_error'].min():.3f}")
+        c3.metric("Worst week error", f"{sub['abs_error'].max():.3f}")
+        st.dataframe(sub.assign(week_start=sub["week_start"].dt.strftime("%Y-%m-%d")), hide_index=True, use_container_width=True)
+
+    with tabs[4]:
+        with st.expander("metrics.txt"):
+            st.code(metrics_text, language="text")
+        with st.expander("district_metrics.csv"):
+            st.dataframe(district_df, hide_index=True, use_container_width=True)
+        with st.expander("predictions_by_district_week.csv"):
+            disp = pred_df.copy()
+            disp["week_start"] = disp["week_start"].dt.strftime("%Y-%m-%d")
+            st.dataframe(disp, hide_index=True, use_container_width=True)
+        st.download_button(
+            "Download predictions_by_district_week.csv",
+            data=pred_df.to_csv(index=False),
+            file_name=f"{target_name}_predictions_by_district_week.csv",
+            mime="text/csv",
+        )
 
 
 # ══════════════════════════════════════════════════════════════════════════
