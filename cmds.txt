@@ -9,7 +9,10 @@ python train_stgcn.py ^
   --week_index biometric_weekly_output/week_index.csv ^
   --features biometric_weekly_output/tensor_feature_columns.csv ^
   --target bio_total ^
-  --output_dir biometric_model_output
+  --output_dir biometric_model_output ^
+  --t_in 8 --t_out 1 --k 3 --kt 2 ^
+  --c_spatial 8 --c_out 32 ^
+  --dropout 0.2 --batch_size 4 --epochs 120 --lr 0.001
 
 python train_stgcn.py ^
   --tensor enrolment_weekly_output/feature_tensor_X.npy ^
@@ -18,4 +21,7 @@ python train_stgcn.py ^
   --week_index enrolment_weekly_output/week_index.csv ^
   --features enrolment_weekly_output/tensor_feature_columns.csv ^
   --target enrol_total ^
-  --output_dir enrolment_model_output
+  --output_dir enrolment_model_output ^
+  --t_in 8 --t_out 1 --k 3 --kt 2 ^
+  --c_spatial 8 --c_out 32 ^
+  --dropout 0.2 --batch_size 4 --epochs 120 --lr 0.001
