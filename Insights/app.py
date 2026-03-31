@@ -47,7 +47,7 @@ with st.sidebar:
     st.markdown(
         "<div style='padding:8px 0 20px'>"
         "<div style='font-size:1.3rem;color:#ffffff;line-height:1.3;margin-bottom:4px;'>"
-        "color:#ffffff;line-height:1.3;margin-bottom:4px;'>Aadhaar<br>Data Mining</div>"
+        "Aadhaar<br>Data Mining</div>"
         "<div style='font-size:11px;color:#6b7280;letter-spacing:.05em;"
         "text-transform:uppercase;'>Research Dashboard</div></div>",
         unsafe_allow_html=True
