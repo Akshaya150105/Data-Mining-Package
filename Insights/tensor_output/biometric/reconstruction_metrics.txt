@@ -1,0 +1,5 @@
+Tensor name = biometric
+Shape = (45, 580, 6)
+Rank = 7
+Relative reconstruction error = 0.315271
+Approximate fit = 0.684729

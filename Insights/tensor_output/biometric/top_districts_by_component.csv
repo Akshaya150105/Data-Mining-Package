@@ -1,0 +1,71 @@
+component,district,loading
+Component_1,Pune,0.2122987061738968
+Component_1,Mumbai,0.21134598553180695
+Component_1,Pashchim Champaran,0.20087449252605438
+Component_1,Nashik,0.19115345180034637
+Component_1,Thane,0.18745926022529602
+Component_1,Jalgaon,0.14591501653194427
+Component_1,Kurnool,0.13309632241725922
+Component_1,Jaipur,0.12776495516300201
+Component_1,Nagpur,0.12409555912017822
+Component_1,Ashoknagar,0.12132502347230911
+Component_2,Sitapur,0.11491090059280396
+Component_2,Kaushambi,0.10986519604921341
+Component_2,Singrauli,0.10743019729852676
+Component_2,Aligarh,0.10594874620437622
+Component_2,Etah,0.10517933964729309
+Component_2,Sivasagar,0.10191694647073746
+Component_2,Hailakandi,0.10051747411489487
+Component_2,Shahjahanpur,0.09936684370040894
+Component_2,Bulandshahr,0.09661610424518585
+Component_2,Chandigarh,0.09655668586492538
+Component_3,Zunheboto,0.1495293378829956
+Component_3,Longleng,0.13792170584201813
+Component_3,Kiphire,0.13684430718421936
+Component_3,Kargil,0.13517533242702484
+Component_3,Phek,0.13429872691631317
+Component_3,Purbi Singhbhum,0.13426290452480316
+Component_3,Wokha,0.13117188215255737
+Component_3,Mokokchung,0.13072903454303741
+Component_3,Tuensang,0.12926621735095978
+Component_3,Kohima,0.12885215878486633
+Component_4,Kaushambi,0.7013542652130127
+Component_4,Champhai,0.6231066584587097
+Component_4,Saiha,0.6189336180686951
+Component_4,Barpeta,0.6146336197853088
+Component_4,Nalbari,0.5827104449272156
+Component_4,Satara,0.5751462578773499
+Component_4,Hardoi,0.5692936778068542
+Component_4,Etah,0.5588833689689636
+Component_4,Shahjahanpur,0.5528762340545654
+Component_4,Baksa,0.5527684688568115
+Component_5,Kurnool,0.5287981629371643
+Component_5,Banswara,0.503934919834137
+Component_5,Srikakulam,0.46583810448646545
+Component_5,Dungarpur,0.4520357847213745
+Component_5,Chittoor,0.43445757031440735
+Component_5,Guntur,0.4340530037879944
+Component_5,Barmer,0.41378986835479736
+Component_5,Vizianagaram,0.40775808691978455
+Component_5,East Godavari,0.4006177484989166
+Component_5,Jhalawar,0.3912028670310974
+Component_6,Kargil,45805.07421875
+Component_6,Saiha,42512.66015625
+Component_6,Upper Siang,40957.76953125
+Component_6,Dibang Valley,40813.1796875
+Component_6,Zunheboto,40203.6484375
+Component_6,Longleng,40124.8828125
+Component_6,Lohit,38937.11328125
+Component_6,Champhai,38482.9921875
+Component_6,Kinnaur,38329.5859375
+Component_6,Tirap,38260.21875
+Component_7,Ramban,0.5855996012687683
+Component_7,Tawang,0.5045862793922424
+Component_7,Kargil,0.473988801240921
+Component_7,Saiha,0.44980087876319885
+Component_7,Nalbari,0.41770437359809875
+Component_7,Tirap,0.38905853033065796
+Component_7,Kurung Kumey,0.38265514373779297
+Component_7,Hardoi,0.38199910521507263
+Component_7,East Siang,0.3725860118865967
+Component_7,Champhai,0.37252840399742126

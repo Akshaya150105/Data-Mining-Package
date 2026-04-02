@@ -1,0 +1,5 @@
+Tensor name = enrolment
+Shape = (45, 580, 6)
+Rank = 7
+Relative reconstruction error = 0.342387
+Approximate fit = 0.657613

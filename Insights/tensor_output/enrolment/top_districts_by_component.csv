@@ -1,0 +1,71 @@
+component,district,loading
+Component_1,Pashchim Champaran,0.6979024410247803
+Component_1,Gaya,0.2277248650789261
+Component_1,Patna,0.19305075705051422
+Component_1,Muzaffarpur,0.1672048568725586
+Component_1,Bhagalpur,0.13557258248329163
+Component_1,Bahraich,0.12137427926063538
+Component_1,Hyderabad,0.1136944368481636
+Component_1,Pune,0.10613524913787842
+Component_1,Kanpur Nagar,0.10593973845243454
+Component_1,Madhubani,0.104643814265728
+Component_2,East Khasi Hills,2.12664532661438
+Component_2,West Khasi Hills,1.1670210361480713
+Component_2,West Garo Hills,1.0969886779785156
+Component_2,Ri Bhoi,0.750126302242279
+Component_2,Sitamarhi,0.5097606182098389
+Component_2,Pashchim Champaran,0.47720927000045776
+Component_2,Golaghat,0.40948688983917236
+Component_2,East Garo Hills,0.37680649757385254
+Component_2,South Garo Hills,0.3148038983345032
+Component_2,Tinsukia,0.3040308356285095
+Component_3,Purba Champaran,0.15321598947048187
+Component_3,Nashik,0.14650651812553406
+Component_3,Hardoi,0.14258474111557007
+Component_3,Varanasi,0.14158809185028076
+Component_3,Parbhani,0.13274890184402466
+Component_3,Mathura,0.13252967596054077
+Component_3,Gorakhpur,0.13118976354599
+Component_3,Amritsar,0.1284763664007187
+Component_3,Chirang,0.1282636970281601
+Component_3,Balrampur,0.12746676802635193
+Component_4,West Khasi Hills,0.3815014958381653
+Component_4,Ri Bhoi,0.32110559940338135
+Component_4,Dibrugarh,0.3149886727333069
+Component_4,Sivasagar,0.31318941712379456
+Component_4,East Khasi Hills,0.30723467469215393
+Component_4,South Garo Hills,0.3006862998008728
+Component_4,Kapurthala,0.289972722530365
+Component_4,Sonitpur,0.28058090806007385
+Component_4,Kullu,0.2793090045452118
+Component_4,Udalguri,0.26928937435150146
+Component_5,Murshidabad,4.996140956878662
+Component_5,South 24 Parganas,4.333378314971924
+Component_5,North 24 Parganas,3.6985926628112793
+Component_5,Pune,3.620244026184082
+Component_5,Mumbai,3.3448991775512695
+Component_5,Hyderabad,2.9834213256835938
+Component_5,Ashoknagar,2.497870683670044
+Component_5,Jaipur,2.445199489593506
+Component_5,Pashchim Champaran,2.4409995079040527
+Component_5,Purba Medinipur,2.355440616607666
+Component_6,Pashchim Champaran,3164706.75
+Component_6,Hyderabad,1783924.125
+Component_6,Purba Champaran,1526365.125
+Component_6,Hardoi,1469096.5
+Component_6,Pune,1335421.125
+Component_6,Barwani,1280249.0
+Component_6,Mumbai,1254561.0
+Component_6,Patna,1194982.375
+Component_6,Indore,1122050.125
+Component_6,Gaya,1110920.875
+Component_7,Agra,0.32131004333496094
+Component_7,Virudunagar,0.32131004333496094
+Component_7,Tumkur,0.32131004333496094
+Component_7,Bagalkot,0.32131004333496094
+Component_7,Uttar Bastar Kanker,0.32131004333496094
+Component_7,Thoothukkudi,0.32131004333496094
+Component_7,Thiruvarur,0.32131004333496094
+Component_7,The Dangs,0.32131004333496094
+Component_7,Baleshwar,0.32131004333496094
+Component_7,Banas Kantha,0.32131004333496094

@@ -39,8 +39,8 @@ TABLE_DIR  = Path("table_output")
 STGCN_BASE_DIR     = Path("..") / "NEW_STGCN"
 BIO_MODEL_DIR = Path("../NEW_STGCN/biometric_model_output")
 ENROL_MODEL_DIR = Path("../NEW_STGCN/enrolment_model_output")
-FORECAST_DIR  = Path("forecast_output")
-
+# FORECAST_DIR  = Path("forecast_output")
+TENSOR_DIR = Path("tensor_output")
 
 # ── Sidebar ──────────────────────────────────────────────────────────────
 with st.sidebar:
@@ -54,7 +54,7 @@ with st.sidebar:
     )
     st.markdown("---")
     page = st.radio("Navigation",
-        ["Clustering Analysis", "Table Analysis", "State Comparison", "Time Series Trends", "Spatial Autocorrelation", "District Deep-Dive", "STGCN Results", "Forecast"],
+        ["Clustering Analysis", "Table Analysis", "State Comparison", "Time Series Trends", "Spatial Autocorrelation", "District Deep-Dive", "STGCN Results","Tensor Decomposition"],
         label_visibility="collapsed")
     st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
     st.markdown(
@@ -69,7 +69,7 @@ with st.sidebar:
 def img(path):
     if Path(path).exists():
         st.markdown("<div class='img-frame'>", unsafe_allow_html=True)
-        st.image(str(path), use_container_width=True)
+        st.image(str(path), width='stretch')
         st.markdown("</div>", unsafe_allow_html=True)
     else:
         st.warning(f"{Path(path).name} not found — run the analysis script first.")
@@ -164,7 +164,7 @@ if page == "Clustering Analysis":
                     mask = (filtered['district'].str.contains(search,case=False,na=False) |
                             filtered['state'].str.contains(search,case=False,na=False))
                     filtered = filtered[mask]
-                st.dataframe(filtered, hide_index=True, use_container_width=True)
+                st.dataframe(filtered, hide_index=True, width='stretch')
 
     with t4:
         img(CLUSTER_DIR/"elbow_silhouette.png")
@@ -425,7 +425,7 @@ elif page == "State Comparison":
         p = Path(path)
         if p.exists():
             st.markdown("<div class='img-frame'>", unsafe_allow_html=True)
-            st.image(str(p), use_container_width=True)
+            st.image(str(p), width='stretch')
             st.markdown("</div>", unsafe_allow_html=True)
         else:
             st.warning(f"{p.name} not found — run state_comparison.py first.")
@@ -514,7 +514,7 @@ elif page == "State Comparison":
         if search_state:
             disp = disp[disp["state"].str.contains(search_state, case=False, na=False)]
         disp = disp.sort_values(sort_col, ascending=False)
-        st.dataframe(disp, hide_index=True, use_container_width=True)
+        st.dataframe(disp, hide_index=True, width='stretch')
         st.download_button(
             label="Download CSV",
             data=disp.to_csv(index=False),
@@ -582,7 +582,7 @@ elif page == "Time Series Trends":
         p = Path(path)
         if p.exists():
             st.markdown("<div class='img-frame'>", unsafe_allow_html=True)
-            st.image(str(p), use_container_width=True)
+            st.image(str(p), width='stretch')
             st.markdown("</div>", unsafe_allow_html=True)
         else:
             st.warning(f"{p.name} not found.")
@@ -684,7 +684,7 @@ elif page == "Time Series Trends":
             disp = disp.sort_values("_total", ascending=(sort_ts=="Ascending"))
             disp = disp.drop(columns=["_total"])
 
-            st.dataframe(disp, use_container_width=True)
+            st.dataframe(disp, width='stretch')
             st.download_button(
                 label="Download ts_data.csv",
                 data=disp.to_csv(),
@@ -789,7 +789,7 @@ elif page == "Spatial Autocorrelation":
         p = Path(path)
         if p.exists():
             st.markdown("<div class='img-frame'>", unsafe_allow_html=True)
-            st.image(str(p), use_container_width=True)
+            st.image(str(p), width='stretch')
             st.markdown("</div>", unsafe_allow_html=True)
         else:
             st.warning(f"{p.name} not found.")
@@ -896,7 +896,7 @@ elif page == "Spatial Autocorrelation":
             if lisa_filter != "All":
                 disp = disp[disp["lisa_type"] == lisa_filter]
             disp = disp.sort_values("enrol_total", ascending=False)
-            st.dataframe(disp, hide_index=True, use_container_width=True)
+            st.dataframe(disp, hide_index=True, width='stretch')
             st.download_button("Download spatial_summary.csv",
                                disp.to_csv(index=False),
                                "spatial_summary.csv", "text/csv")
@@ -1108,7 +1108,7 @@ elif page == "District Deep-Dive":
         plt.savefig(buf, format="png", dpi=150, bbox_inches="tight", facecolor=BG)
         plt.close(); buf.seek(0)
         st.markdown("<div class='img-frame'>", unsafe_allow_html=True)
-        st.image(buf, use_container_width=True)
+        st.image(buf, width='stretch')
         st.markdown("</div>", unsafe_allow_html=True)
 
     # Peer comparison
@@ -1124,7 +1124,7 @@ elif page == "District Deep-Dive":
             return ["background:#eef2ff;font-weight:500"
                     if r["district"]==sel_dist else "" for _ in r]
         st.dataframe(pdisp.style.apply(hl, axis=1),
-                     hide_index=True, use_container_width=True)
+                     hide_index=True, width='stretch')
         st.download_button("Download CSV", pdisp.to_csv(index=False),
                            f"{sel_state}_peers.csv","text/csv")
 
@@ -1277,7 +1277,7 @@ elif page == "STGCN Results":
         plt.close(fig)
         buf.seek(0)
         st.markdown("<div class='img-frame'>", unsafe_allow_html=True)
-        st.image(buf, use_container_width=True)
+        st.image(buf, width='stretch')
         st.markdown("</div>", unsafe_allow_html=True)
         note(
             "This chart aggregates the model output across all districts for each forecast week. "
@@ -1289,7 +1289,7 @@ elif page == "STGCN Results":
         loss_path = model_dir / "loss_curve.png"
         if loss_path.exists():
             st.markdown("<div class='img-frame'>", unsafe_allow_html=True)
-            st.image(str(loss_path), use_container_width=True)
+            st.image(str(loss_path), width='stretch')
             st.markdown("</div>", unsafe_allow_html=True)
             note(
                 "Purple is the training loss and green is the validation loss. "
@@ -1303,7 +1303,7 @@ elif page == "STGCN Results":
         ascending = True
         view_df = district_df.sort_values(sort_metric, ascending=ascending).copy()
         view_df[[c for c in ["mae", "rmse"] if c in view_df.columns]] = view_df[[c for c in ["mae", "rmse"] if c in view_df.columns]].round(3)
-        st.dataframe(view_df, hide_index=True, use_container_width=True)
+        st.dataframe(view_df, hide_index=True, width='stretch')
         note(
             "This table ranks districts by forecast quality. Lower MAE and RMSE indicate closer predictions. "
             "Use this to identify districts where the model is consistently stable versus districts with more irregular behaviour."
@@ -1332,24 +1332,24 @@ elif page == "STGCN Results":
         plt.close(fig)
         buf.seek(0)
         st.markdown("<div class='img-frame'>", unsafe_allow_html=True)
-        st.image(buf, use_container_width=True)
+        st.image(buf, width='stretch')
         st.markdown("</div>", unsafe_allow_html=True)
 
         c1, c2, c3 = st.columns(3)
         c1.metric("District MAE", f"{sub['abs_error'].mean():.3f}")
         c2.metric("Best week error", f"{sub['abs_error'].min():.3f}")
         c3.metric("Worst week error", f"{sub['abs_error'].max():.3f}")
-        st.dataframe(sub.assign(week_start=sub["week_start"].dt.strftime("%Y-%m-%d")), hide_index=True, use_container_width=True)
+        st.dataframe(sub.assign(week_start=sub["week_start"].dt.strftime("%Y-%m-%d")), hide_index=True, width='stretch')
 
     with tabs[4]:
         with st.expander("metrics.txt"):
             st.code(metrics_text, language="text")
         with st.expander("district_metrics.csv"):
-            st.dataframe(district_df, hide_index=True, use_container_width=True)
+            st.dataframe(district_df, hide_index=True, width='stretch')
         with st.expander("predictions_by_district_week.csv"):
             disp = pred_df.copy()
             disp["week_start"] = disp["week_start"].dt.strftime("%Y-%m-%d")
-            st.dataframe(disp, hide_index=True, use_container_width=True)
+            st.dataframe(disp, hide_index=True, width='stretch')
         st.download_button(
             "Download predictions_by_district_week.csv",
             data=pred_df.to_csv(index=False),
@@ -1358,178 +1358,645 @@ elif page == "STGCN Results":
         )
 
 
-# ══════════════════════════════════════════════════════════════════════════
-# FORECAST
-# ══════════════════════════════════════════════════════════════════════════
-
-elif page == "Forecast":
-    import matplotlib.pyplot as plt
-    import matplotlib.ticker as mticker
-    import io
-
+elif page == "Tensor Decomposition":
+ 
     st.markdown("""
-    <div class='section-title'>STGCN Future Forecast</div>
+    <div class='section-title'>Tensor Decomposition</div>
     <div class='section-sub'>
-        Autoregressive predictions beyond the dataset —
-        national enrolment trend, district-level forecasts and feature projections
+        CP decomposition of weekly district tensors for biometric and enrolment data.
+        This reveals latent patterns across time, districts, and features.
     </div>
     """, unsafe_allow_html=True)
-
-    if not (FORECAST_DIR / "forecast_national.png").exists():
-        st.warning("Forecast outputs not found. Run stgcn_forecast.py first.")
-        st.code("python stgcn_forecast.py --steps 6")
+ 
+    MODEL_DIRS = {
+        "Biometric Tensor": TENSOR_DIR / "biometric",
+        "Enrolment Tensor": TENSOR_DIR / "enrolment",
+    }
+ 
+    tensor_name = st.radio("Choose tensor", list(MODEL_DIRS.keys()), horizontal=True)
+    tensor_dir = MODEL_DIRS[tensor_name]
+ 
+    required = [
+        tensor_dir / "reconstruction_metrics.txt",
+        tensor_dir / "time_factors.csv",
+        tensor_dir / "district_factors.csv",
+        tensor_dir / "feature_factors.csv",
+        tensor_dir / "component_strengths.csv",
+    ]
+    missing = [p.name for p in required if not p.exists()]
+    if missing:
+        st.warning(f"Missing tensor decomposition files in {tensor_dir}: {', '.join(missing)}")
+        st.code(f"""Expected files inside:
+{tensor_dir}
+ 
+- reconstruction_metrics.txt
+- time_factors.csv
+- district_factors.csv
+- feature_factors.csv
+- component_strengths.csv
+- time_factors.png
+- district_component_heatmap.png
+- feature_component_heatmap.png
+""")
         st.stop()
-
-    def show(path, wide=True):
-        p = FORECAST_DIR / path
-        if p.exists():
-            st.markdown("<div class='img-frame'>", unsafe_allow_html=True)
-            st.image(str(p), use_container_width=wide)
-            st.markdown("</div>", unsafe_allow_html=True)
-        else:
-            st.warning(f"{path} not found.")
-
+ 
+    metrics_text = (tensor_dir / "reconstruction_metrics.txt").read_text(encoding="utf-8")
+    time_df = pd.read_csv(tensor_dir / "time_factors.csv", index_col=0)
+    district_df = pd.read_csv(tensor_dir / "district_factors.csv", index_col=0)
+    feature_df = pd.read_csv(tensor_dir / "feature_factors.csv", index_col=0)
+    strength_df = pd.read_csv(tensor_dir / "component_strengths.csv")
+ 
+    def parse_metrics(txt):
+        vals = {}
+        for line in txt.splitlines():
+            if "=" in line:
+                k, v = line.split("=", 1)
+                vals[k.strip().lower()] = v.strip()
+        return vals
+ 
+    parsed = parse_metrics(metrics_text)
+    shape_str = parsed.get("shape", "—")
+    rank_str = parsed.get("rank", "—")
+    fit_str = parsed.get("approximate fit", "—")
+    err_str = parsed.get("relative reconstruction error", "—")
+ 
+    st.markdown(f"""
+    <div class='metric-row'>
+        <div class='metric-card'>
+            <div class='metric-label'>Tensor</div>
+            <div class='metric-value' style='font-size:1.05rem;'>{tensor_name}</div>
+            <div class='metric-note'>weekly district tensor</div>
+        </div>
+        <div class='metric-card'>
+            <div class='metric-label'>Shape</div>
+            <div class='metric-value' style='font-size:1.0rem;'>{shape_str}</div>
+            <div class='metric-note'>T × N × C</div>
+        </div>
+        <div class='metric-card'>
+            <div class='metric-label'>Rank</div>
+            <div class='metric-value'>{rank_str}</div>
+            <div class='metric-note'>number of latent components</div>
+        </div>
+        <div class='metric-card'>
+            <div class='metric-label'>Approx. Fit</div>
+            <div class='metric-value'>{fit_str}</div>
+            <div class='metric-note'>higher is better</div>
+        </div>
+        <div class='metric-card'>
+            <div class='metric-label'>Reconstruction Error</div>
+            <div class='metric-value'>{err_str}</div>
+            <div class='metric-note'>lower is better</div>
+        </div>
+        <div class='metric-card'>
+            <div class='metric-label'>Components</div>
+            <div class='metric-value'>{len(strength_df)}</div>
+            <div class='metric-note'>interpretable latent patterns</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+ 
     def note(body):
         st.markdown(
             f"<div style='background:white;border:1px solid #e5e7eb;"
             f"border-radius:10px;padding:14px 18px;font-size:13px;"
             f"color:#6b7280;line-height:1.7;'>{body}</div>",
-            unsafe_allow_html=True)
-
-    # ── Metric row from summary CSV ─────────────────────────────────────
-    summ_path = FORECAST_DIR / "forecast_summary.csv"
-    if summ_path.exists():
-        summ = pd.read_csv(summ_path)
-        n_steps = len(summ)
-        # Try to get step+1 and step+N national enrolment totals
-        enrol_col = [c for c in summ.columns if "enrol_total" in c]
-        if enrol_col:
-            v1  = float(summ.iloc[0][enrol_col[0]])
-            vN  = float(summ.iloc[-1][enrol_col[0]])
-            chg = ((vN - v1) / abs(v1) * 100) if abs(v1) > 1e-8 else 0
-        else:
-            v1, vN, chg = 0, 0, 0
-
-        st.markdown(f"""
-        <div class='metric-row'>
-            <div class='metric-card'>
-                <div class='metric-label'>Forecast horizon</div>
-                <div class='metric-value'>{n_steps}</div>
-                <div class='metric-note'>steps beyond dataset</div>
-            </div>
-            <div class='metric-card'>
-                <div class='metric-label'>Method</div>
-                <div class='metric-value' style='font-size:1rem;'>Autoregressive</div>
-                <div class='metric-note'>each step feeds next</div>
-            </div>
-            <div class='metric-card'>
-                <div class='metric-label'>Seed window</div>
-                <div class='metric-value'>6</div>
-                <div class='metric-note'>real time steps used</div>
-            </div>
-            <div class='metric-card'>
-                <div class='metric-label'>Districts forecast</div>
-                <div class='metric-value'>945</div>
-                <div class='metric-note'>simultaneously</div>
-            </div>
-            <div class='metric-card'>
-                <div class='metric-label'>Trend (step+1 → +{n_steps})</div>
-                <div class='metric-value' style='color:{"#1D9E75" if chg >= 0 else "#D85A30"};font-size:1.3rem;'>
-                    {"▲" if chg >= 0 else "▼"} {abs(chg):.1f}%
-                </div>
-                <div class='metric-note'>national enrolment change</div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    t1, t2, t3, t4, t5 = st.tabs([
-        "National forecast",
+            unsafe_allow_html=True,
+        )
+ 
+    tabs = st.tabs([
+        "Time factors",
+        "District patterns",
+        "Feature patterns",
         "Top districts",
-        "All features",
-        "Change heatmap",
-        "Forecast data",
+        "Raw files",
     ])
-
-    with t1:
-        show("forecast_national.png")
-        note(
-            "<b>How to read this chart</b><br><br>"
-            "The <b style='color:#534AB7;'>purple line</b> shows the last 20 real "
-            "observed time steps from the dataset (ending 2025-12-29).<br><br>"
-            "The <b style='color:#D85A30;'>dashed red line</b> is the STGCN autoregressive "
-            "forecast — each step's prediction is fed back as input for the next step.<br><br>"
-            "The shaded band shows ±8% uncertainty. Because autoregressive forecasts "
-            "compound errors step-by-step, confidence naturally decreases further out. "
-            "Steps +1 and +2 are most reliable; +5 and +6 are indicative trends only."
-        )
-
-    with t2:
-        show("forecast_top_districts.png")
-        note(
-            "Top 10 districts by total forecast enrolment across all steps. "
-            "Each line tracks one district's predicted enrolment per future time step.<br><br>"
-            "Flat lines = the model expects stable enrolment continuation. "
-            "Rising/falling lines = the model has detected a momentum trend in the seed window "
-            "and projects it forward."
-        )
-
-    with t3:
-        show("forecast_all_features.png")
-        note(
-            "National total (sum across all districts) for each of the 7 tensor features. "
-            "All values are on the z-scored scale used during training.<br><br>"
-            "Features that stay flat across steps indicate the model found no strong trend "
-            "in the seed window. Features with clear slope reflect momentum the model "
-            "detected in the last 6 real observations."
-        )
-
-    with t4:
-        show("forecast_change_heatmap.png")
-        note(
-            "For the top 30 districts: percentage change in predicted enrolment "
-            "from step+1 to each subsequent step.<br><br>"
-            "<b style='color:#1D9E75;'>Green</b> = predicted growth relative to step+1.<br>"
-            "<b style='color:#D85A30;'>Red</b> = predicted decline.<br><br>"
-            "This shows which districts are on a growth trajectory vs which are expected "
-            "to plateau or decline in the near term."
-        )
-
-    with t5:
-        csv_path = FORECAST_DIR / "forecast.csv"
-        if csv_path.exists():
-            fdf = pd.read_csv(csv_path)
-            col_f1, col_f2, col_f3 = st.columns(3)
-            with col_f1:
-                step_filter = st.selectbox("Step",
-                    ["All"] + sorted(fdf["step"].unique().tolist()))
-            with col_f2:
-                search_f = st.text_input("Search district", "", key="fc_search")
-            with col_f3:
-                sort_f = st.selectbox("Sort by",
-                    ["enrol_total", "bio_total", "enrol_minor_ratio", "enrol_adult_ratio"])
-
-            disp_f = fdf.copy()
-            if step_filter != "All":
-                disp_f = disp_f[disp_f["step"] == step_filter]
-            if search_f:
-                disp_f = disp_f[disp_f["district"].str.contains(
-                    search_f, case=False, na=False)]
-            if sort_f in disp_f.columns:
-                disp_f = disp_f.sort_values(sort_f, ascending=False)
-
-            st.dataframe(disp_f, hide_index=True, use_container_width=True)
-            st.download_button(
-                "Download forecast.csv",
-                fdf.to_csv(index=False),
-                "forecast.csv", "text/csv"
-            )
-
-            # National summary table
-            if summ_path.exists():
-                st.markdown("**National totals by step**")
-                st.dataframe(
-                    pd.read_csv(summ_path).round(3),
-                    hide_index=True, use_container_width=True
-                )
+ 
+    is_bio = (tensor_name == "Biometric Tensor")
+ 
+    BIO_INTERP_CSS = """
+    <style>
+    .interp-section { margin-top: 2rem; }
+    .interp-header {
+        font-size: 13px; font-weight: 600; color: #374151;
+        text-transform: uppercase; letter-spacing: .06em;
+        margin-bottom: 1rem; padding-bottom: 6px;
+        border-bottom: 2px solid #e5e7eb;
+    }
+    .interp-card {
+        background: white; border: 1px solid #e5e7eb;
+        border-radius: 12px; padding: 16px 20px; margin-bottom: 10px;
+    }
+    .interp-card-header {
+        display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+    }
+    .comp-badge {
+        font-size: 11px; font-weight: 700; color: white;
+        background: #4f46e5; border-radius: 6px;
+        padding: 3px 10px; letter-spacing: .04em;
+        white-space: nowrap;
+    }
+    .comp-title { font-size: 14px; font-weight: 600; color: #1a1a2e; }
+    .comp-body { font-size: 13px; color: #6b7280; line-height: 1.7; }
+    .comp-meta {
+        display: flex; gap: 20px; margin-top: 8px; flex-wrap: wrap;
+    }
+    .comp-meta-item { font-size: 12px; color: #9ca3af; }
+    .comp-meta-item b { color: #374151; }
+    .interp-note {
+        background: #f0f4ff; border-left: 3px solid #4f46e5;
+        border-radius: 0 8px 8px 0; padding: 12px 16px;
+        font-size: 13px; color: #374151; line-height: 1.7;
+        margin-top: 1rem;
+    }
+    </style>
+    """
+ 
+    with tabs[0]:
+        img_path = tensor_dir / "time_factors.png"
+        if img_path.exists():
+            st.markdown("<div class='img-frame'>", unsafe_allow_html=True)
+            st.image(str(img_path), width='stretch')
+            st.markdown("</div>", unsafe_allow_html=True)
         else:
-            st.warning("forecast.csv not found.")
+            st.line_chart(time_df)
+ 
+        note(
+            "Each line is one latent component across weeks. Peaks indicate weeks where that hidden pattern is strongly active. "
+            "This helps identify temporal regimes such as sustained growth, decline, or periodic bursts."
+        )
+ 
+        if is_bio:
+            st.markdown(BIO_INTERP_CSS, unsafe_allow_html=True)
+            st.markdown("<div class='interp-section'>", unsafe_allow_html=True)
+            st.markdown("<div class='interp-header'>📅 How to Read the Time Factors Plot</div>", unsafe_allow_html=True)
+            st.markdown("""
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge'>Component 1</span>
+                    <span class='comp-title'>Monthly batch spikes — Mar to Jul 2025</span>
+                </div>
+                <div class='comp-body'>
+                    Component 1 shows sharp, repeating peaks roughly every 4 weeks from March through July 2025,
+                    then settles into a lower, smoother level from August onward. This strongly suggests
+                    <b>monthly Aadhaar data release or update cycles</b> — bulk records being pushed in batches.
+                    After mid-2025 the pattern ends, possibly indicating a shift to continuous ingestion.
+                </div>
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge' style='background:#d97706;'>Components 2 & 3</span>
+                    <span class='comp-title'>Stable negative baseline</span>
+                </div>
+                <div class='comp-body'>
+                    Components 2 and 3 run as flat negative lines throughout the entire period (~−20 and −23).
+                    A negative time loading is not a problem — it simply means these components act as a
+                    <b>constant background offset</b> that the decomposition uses to balance the overall tensor.
+                    They do not represent declining activity.
+                </div>
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge' style='background:#059669;'>Components 4–7</span>
+                    <span class='comp-title'>Near-zero — temporally diffuse patterns</span>
+                </div>
+                <div class='comp-body'>
+                    These components stay close to zero across all weeks, with minor fluctuations from
+                    September 2025 onward. Their signal lives almost entirely in the
+                    <b>district and feature dimensions</b> — they capture spatial demographic structure
+                    rather than any particular time period.
+                </div>
+            </div>
+            <div class='interp-note'>
+                <b>Key takeaway:</b> The time axis is dominated by Component 1's batch-upload rhythm.
+                All other components are temporally stable, meaning the geographic and demographic
+                patterns they capture hold consistently across the entire study period.
+            </div>
+            </div>
+            """, unsafe_allow_html=True)
+ 
+    with tabs[1]:
+        img_path = tensor_dir / "district_component_heatmap.png"
+        if img_path.exists():
+            st.markdown("<div class='img-frame'>", unsafe_allow_html=True)
+            st.image(str(img_path), width='stretch')
+            st.markdown("</div>", unsafe_allow_html=True)
+ 
+        district_component = st.selectbox(
+            "Choose component for district ranking",
+            district_df.columns.tolist(),
+            key="tensor_district_component"
+        )
+        top_d = district_df[district_component].abs().sort_values(ascending=False).head(25).reset_index()
+        top_d.columns = ["district", "loading"]
+        st.dataframe(top_d, hide_index=True, width='stretch')
+ 
+        note(
+            "The district factor matrix shows which districts are strongly associated with each latent component. "
+            "Large absolute loading means that district strongly expresses that hidden pattern."
+        )
+ 
+        if is_bio:
+            st.markdown(BIO_INTERP_CSS, unsafe_allow_html=True)
+            st.markdown("<div class='interp-section'>", unsafe_allow_html=True)
+            st.markdown("<div class='interp-header'>🗺️ How to Read the District Heatmap</div>", unsafe_allow_html=True)
+            st.markdown("""
+            <div class='interp-note' style='margin-bottom:1rem;'>
+                <b>Reading tip:</b> The first 5 components appear pale/uniform in the heatmap while Component 6
+                is intensely colored. This is a <b>scale effect</b>, not importance — remote districts in C6
+                have extreme ratio values because their population denominators are tiny.
+                Components 1–5 contain equally real structure, just smaller numbers.
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge'>C1</span>
+                    <span class='comp-title'>Urban volume pattern</span>
+                </div>
+                <div class='comp-body'>Top districts: Pune, Mumbai, Nashik, Thane, Nagpur.
+                These are Maharashtra's largest metros. This component captures <b>sheer enrolment volume</b>
+                — districts with the most absolute biometric records dominate.</div>
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge' style='background:#d97706;'>C2</span>
+                    <span class='comp-title'>Young child dependency — UP cluster</span>
+                </div>
+                <div class='comp-body'>Top districts: Sitapur, Kaushambi, Aligarh, Etah, Bulandshahr (all Uttar Pradesh).
+                These districts have <b>high under-5 and dependency ratios</b>, reflecting dense young populations
+                with high child-to-adult enrollment proportions.</div>
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge' style='background:#059669;'>C3</span>
+                    <span class='comp-title'>Teen age-ratio — Nagaland cluster</span>
+                </div>
+                <div class='comp-body'>Top districts: Zunheboto, Longleng, Kiphire, Phek, Wokha, Kohima — nearly all Nagaland.
+                These districts show <b>disproportionately high 5–17 age-group enrollment ratios</b>,
+                pointing to a distinct demographic or registration pattern in the Northeast.</div>
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge' style='background:#7c3aed;'>C4</span>
+                    <span class='comp-title'>High dependency burden — NE + UP</span>
+                </div>
+                <div class='comp-body'>Top districts: Kaushambi, Champhai, Saiha, Barpeta, Nalbari.
+                A mix of Assam/Mizoram NE districts and UP districts united by <b>high composite dependency ratios</b>
+                across both young and older age groups.</div>
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge' style='background:#dc2626;'>C5</span>
+                    <span class='comp-title'>Rural Andhra/Rajasthan young population</span>
+                </div>
+                <div class='comp-body'>Top districts: Kurnool, Banswara, Srikakulam, Dungarpur, Chittoor.
+                Tribal and rural districts in AP and Rajasthan with <b>high youth age ratios across all
+                young age bands</b> — a structurally young demographic.</div>
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge' style='background:#0891b2;'>C6</span>
+                    <span class='comp-title'>Remote/sparse district scaling factor</span>
+                </div>
+                <div class='comp-body'>Top districts: Kargil, Saiha, Upper Siang, Dibang Valley, Tirap (all remote hill/border districts).
+                Loadings reach 40,000–46,000 — orders of magnitude larger than other components.
+                This is a <b>small-denominator effect</b>: remote districts with tiny populations produce
+                extreme ratio values. Interpret with caution; this component reflects data sparsity, not a real demographic pattern.</div>
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge' style='background:#65a30d;'>C7</span>
+                    <span class='comp-title'>J&amp;K / Arunachal frontier pattern</span>
+                </div>
+                <div class='comp-body'>Top districts: Ramban, Tawang, Kargil, Tirap.
+                Border districts across J&amp;K and Arunachal Pradesh with <b>distinct frontier demographic profiles</b>
+                — high dependency ratios combined with geographic isolation create a unique enrollment signature.</div>
+            </div>
+            </div>
+            """, unsafe_allow_html=True)
+ 
+    with tabs[2]:
+        img_path = tensor_dir / "feature_component_heatmap.png"
+        if img_path.exists():
+            st.markdown("<div class='img-frame'>", unsafe_allow_html=True)
+            st.image(str(img_path), width='stretch')
+            st.markdown("</div>", unsafe_allow_html=True)
+ 
+        feature_component = st.selectbox(
+            "Choose component for feature ranking",
+            feature_df.columns.tolist(),
+            key="tensor_feature_component"
+        )
+        top_f = feature_df[feature_component].abs().sort_values(ascending=False).reset_index()
+        top_f.columns = ["feature", "loading"]
+        st.dataframe(top_f, hide_index=True, width='stretch')
+ 
+        note(
+            "The feature factor matrix tells us which variables define each component. "
+            "So each component can be interpreted using both its dominant features and dominant districts."
+        )
+ 
+        if is_bio:
+            st.markdown(BIO_INTERP_CSS, unsafe_allow_html=True)
+            st.markdown("<div class='interp-section'>", unsafe_allow_html=True)
+            st.markdown("<div class='interp-header'>📊 How to Read the Feature Heatmap</div>", unsafe_allow_html=True)
+            st.markdown("""
+            <div class='interp-note' style='margin-bottom:1rem;'>
+                <b>Reading tip:</b> Bright yellow = large positive loading (feature strongly defines this component).
+                Dark purple = large negative loading (feature inversely defines it). Mid-blue ≈ neutral.
+                Each component is "named" by its brightest cell.
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge'>C1</span>
+                    <span class='comp-title'>Driven by absolute counts (bio_total, bio_age_5_17, bio_age_17_)</span>
+                </div>
+                <div class='comp-body'>All three absolute count features load positively (~0.52–0.57).
+                Ratio features are near zero. This component purely reflects <b>how many records</b> exist —
+                big districts score high, small districts score low.</div>
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge' style='background:#d97706;'>C2</span>
+                    <span class='comp-title'>age_5_ratio + dependency_ratio dominant</span>
+                </div>
+                <div class='comp-body'>age_5_ratio (0.96) and dependency_ratio (0.88) are the defining features.
+                This is a <b>young child burden index</b> — districts where under-5 children form
+                a large share of total enrollment.</div>
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge' style='background:#059669;'>C3</span>
+                    <span class='comp-title'>age_17_ratio exclusively dominant (1.21)</span>
+                </div>
+                <div class='comp-body'>The highest single-feature loading in the entire matrix. This component
+                is almost entirely a <b>teenage enrollment ratio signal</b> — how prominent the 5–17
+                age group is relative to the total.</div>
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge' style='background:#7c3aed;'>C4</span>
+                    <span class='comp-title'>dependency_ratio (1.21) + age_5_ratio (0.64)</span>
+                </div>
+                <div class='comp-body'>Dependency ratio is dominant. This captures districts with
+                <b>high total dependency burden</b> — a combined measure of both young and
+                economically inactive population relative to working-age enrollees.</div>
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge' style='background:#dc2626;'>C5</span>
+                    <span class='comp-title'>All ratio features high — dependency_ratio (1.89) tops</span>
+                </div>
+                <div class='comp-body'>All three ratio features load strongly. This component picks up districts
+                where <b>every age ratio is simultaneously elevated</b> — structurally young populations
+                with high dependency across the board. Note bio_age_5_17 also loads at 0.89.</div>
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge' style='background:#0891b2;'>C6</span>
+                    <span class='comp-title'>Extreme loadings on age_17_ratio (6.43) and age_5_ratio (6.26)</span>
+                </div>
+                <div class='comp-body'>The bright yellow cells in the heatmap. These giant values are not a model error —
+                they reflect remote districts where <b>almost all enrollees fall into young age bands</b>,
+                making ratios mathematically extreme. All features load positively and large.</div>
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge' style='background:#65a30d;'>C7</span>
+                    <span class='comp-title'>dependency_ratio (1.55) + age_5_ratio (0.84)</span>
+                </div>
+                <div class='comp-body'>Similar flavor to C4 but capturing a different set of districts
+                (frontier vs. UP/Assam). The <b>dependency + young child ratio combination</b>
+                here points to border districts with distinct household structures.</div>
+            </div>
+            </div>
+            """, unsafe_allow_html=True)
+ 
+    with tabs[3]:
+        file_path = tensor_dir / "top_districts_by_component.csv"
+        if file_path.exists():
+            top_df = pd.read_csv(file_path)
+            st.dataframe(top_df, hide_index=True, width='stretch')
+        else:
+            st.info("top_districts_by_component.csv not found.")
+ 
+        if is_bio:
+            st.markdown(BIO_INTERP_CSS, unsafe_allow_html=True)
+            st.markdown("<div class='interp-section'>", unsafe_allow_html=True)
+            st.markdown("<div class='interp-header'>🏆 Component Summary — What Each Pattern Represents</div>", unsafe_allow_html=True)
+            st.markdown("""
+            <div class='interp-card'>
+                <div class='comp-meta'>
+                    <div class='comp-meta-item'><b>C1 — Urban volume</b><br>Pune · Mumbai · Nashik<br>Driven by: absolute biometric counts</div>
+                    <div class='comp-meta-item'><b>C2 — Young child dependency (UP)</b><br>Sitapur · Kaushambi · Aligarh<br>Driven by: age_5_ratio, dependency_ratio</div>
+                    <div class='comp-meta-item'><b>C3 — Teen ratio (Nagaland)</b><br>Zunheboto · Longleng · Kiphire<br>Driven by: age_17_ratio</div>
+                    <div class='comp-meta-item'><b>C4 — Dependency burden (NE+UP)</b><br>Kaushambi · Champhai · Saiha<br>Driven by: dependency_ratio</div>
+                </div>
+            </div>
+            <div class='interp-card'>
+                <div class='comp-meta'>
+                    <div class='comp-meta-item'><b>C5 — Rural youth (AP+Raj)</b><br>Kurnool · Banswara · Dungarpur<br>Driven by: all ratio features</div>
+                    <div class='comp-meta-item'><b>C6 — Remote district scaling ⚠️</b><br>Kargil · Upper Siang · Dibang Valley<br>Driven by: extreme small-denominator ratios</div>
+                    <div class='comp-meta-item'><b>C7 — Frontier districts (J&amp;K/AR)</b><br>Ramban · Tawang · Kargil<br>Driven by: dependency_ratio</div>
+                </div>
+            </div>
+            <div class='interp-note'>
+                <b>Overall fit:</b> The decomposition captures <b>68.5%</b> of the tensor's variance at rank 7.
+                The remaining 31.5% is noise or fine-grained district-level variation not captured by
+                these 7 latent patterns. The 7 components together describe the main demographic axes
+                along which Indian districts differ in their Aadhaar biometric enrollment profiles.
+            </div>
+            </div>
+            """, unsafe_allow_html=True)
+ 
+    with tabs[4]:
+        with st.expander("reconstruction_metrics.txt"):
+            st.code(metrics_text, language="text")
+        with st.expander("component_strengths.csv"):
+            st.dataframe(strength_df, hide_index=True, width='stretch')
+        with st.expander("time_factors.csv"):
+            st.dataframe(time_df, width='stretch')
+        with st.expander("district_factors.csv"):
+            st.dataframe(district_df, width='stretch')
+        with st.expander("feature_factors.csv"):
+            st.dataframe(feature_df, width='stretch')
+ 
+        rank_path = tensor_dir / "feature_rankings_by_component.csv"
+        if rank_path.exists():
+            with st.expander("feature_rankings_by_component.csv"):
+                rank_df = pd.read_csv(rank_path)
+                st.dataframe(rank_df, hide_index=True, width='stretch')
+
+# # ══════════════════════════════════════════════════════════════════════════
+# # FORECAST
+# # ══════════════════════════════════════════════════════════════════════════
+
+# elif page == "Forecast":
+#     import matplotlib.pyplot as plt
+#     import matplotlib.ticker as mticker
+#     import io
+
+#     st.markdown("""
+#     <div class='section-title'>STGCN Future Forecast</div>
+#     <div class='section-sub'>
+#         Autoregressive predictions beyond the dataset —
+#         national enrolment trend, district-level forecasts and feature projections
+#     </div>
+#     """, unsafe_allow_html=True)
+
+#     if not (FORECAST_DIR / "forecast_national.png").exists():
+#         st.warning("Forecast outputs not found. Run stgcn_forecast.py first.")
+#         st.code("python stgcn_forecast.py --steps 6")
+#         st.stop()
+
+#     def show(path, wide=True):
+#         p = FORECAST_DIR / path
+#         if p.exists():
+#             st.markdown("<div class='img-frame'>", unsafe_allow_html=True)
+#             st.image(str(p), use_container_width=wide)
+#             st.markdown("</div>", unsafe_allow_html=True)
+#         else:
+#             st.warning(f"{path} not found.")
+
+#     def note(body):
+#         st.markdown(
+#             f"<div style='background:white;border:1px solid #e5e7eb;"
+#             f"border-radius:10px;padding:14px 18px;font-size:13px;"
+#             f"color:#6b7280;line-height:1.7;'>{body}</div>",
+#             unsafe_allow_html=True)
+
+#     # ── Metric row from summary CSV ─────────────────────────────────────
+#     summ_path = FORECAST_DIR / "forecast_summary.csv"
+#     if summ_path.exists():
+#         summ = pd.read_csv(summ_path)
+#         n_steps = len(summ)
+#         # Try to get step+1 and step+N national enrolment totals
+#         enrol_col = [c for c in summ.columns if "enrol_total" in c]
+#         if enrol_col:
+#             v1  = float(summ.iloc[0][enrol_col[0]])
+#             vN  = float(summ.iloc[-1][enrol_col[0]])
+#             chg = ((vN - v1) / abs(v1) * 100) if abs(v1) > 1e-8 else 0
+#         else:
+#             v1, vN, chg = 0, 0, 0
+
+#         st.markdown(f"""
+#         <div class='metric-row'>
+#             <div class='metric-card'>
+#                 <div class='metric-label'>Forecast horizon</div>
+#                 <div class='metric-value'>{n_steps}</div>
+#                 <div class='metric-note'>steps beyond dataset</div>
+#             </div>
+#             <div class='metric-card'>
+#                 <div class='metric-label'>Method</div>
+#                 <div class='metric-value' style='font-size:1rem;'>Autoregressive</div>
+#                 <div class='metric-note'>each step feeds next</div>
+#             </div>
+#             <div class='metric-card'>
+#                 <div class='metric-label'>Seed window</div>
+#                 <div class='metric-value'>6</div>
+#                 <div class='metric-note'>real time steps used</div>
+#             </div>
+#             <div class='metric-card'>
+#                 <div class='metric-label'>Districts forecast</div>
+#                 <div class='metric-value'>945</div>
+#                 <div class='metric-note'>simultaneously</div>
+#             </div>
+#             <div class='metric-card'>
+#                 <div class='metric-label'>Trend (step+1 → +{n_steps})</div>
+#                 <div class='metric-value' style='color:{"#1D9E75" if chg >= 0 else "#D85A30"};font-size:1.3rem;'>
+#                     {"▲" if chg >= 0 else "▼"} {abs(chg):.1f}%
+#                 </div>
+#                 <div class='metric-note'>national enrolment change</div>
+#             </div>
+#         </div>
+#         """, unsafe_allow_html=True)
+
+#     t1, t2, t3, t4, t5 = st.tabs([
+#         "National forecast",
+#         "Top districts",
+#         "All features",
+#         "Change heatmap",
+#         "Forecast data",
+#     ])
+
+#     with t1:
+#         show("forecast_national.png")
+#         note(
+#             "<b>How to read this chart</b><br><br>"
+#             "The <b style='color:#534AB7;'>purple line</b> shows the last 20 real "
+#             "observed time steps from the dataset (ending 2025-12-29).<br><br>"
+#             "The <b style='color:#D85A30;'>dashed red line</b> is the STGCN autoregressive "
+#             "forecast — each step's prediction is fed back as input for the next step.<br><br>"
+#             "The shaded band shows ±8% uncertainty. Because autoregressive forecasts "
+#             "compound errors step-by-step, confidence naturally decreases further out. "
+#             "Steps +1 and +2 are most reliable; +5 and +6 are indicative trends only."
+#         )
+
+#     with t2:
+#         show("forecast_top_districts.png")
+#         note(
+#             "Top 10 districts by total forecast enrolment across all steps. "
+#             "Each line tracks one district's predicted enrolment per future time step.<br><br>"
+#             "Flat lines = the model expects stable enrolment continuation. "
+#             "Rising/falling lines = the model has detected a momentum trend in the seed window "
+#             "and projects it forward."
+#         )
+
+#     with t3:
+#         show("forecast_all_features.png")
+#         note(
+#             "National total (sum across all districts) for each of the 7 tensor features. "
+#             "All values are on the z-scored scale used during training.<br><br>"
+#             "Features that stay flat across steps indicate the model found no strong trend "
+#             "in the seed window. Features with clear slope reflect momentum the model "
+#             "detected in the last 6 real observations."
+#         )
+
+#     with t4:
+#         show("forecast_change_heatmap.png")
+#         note(
+#             "For the top 30 districts: percentage change in predicted enrolment "
+#             "from step+1 to each subsequent step.<br><br>"
+#             "<b style='color:#1D9E75;'>Green</b> = predicted growth relative to step+1.<br>"
+#             "<b style='color:#D85A30;'>Red</b> = predicted decline.<br><br>"
+#             "This shows which districts are on a growth trajectory vs which are expected "
+#             "to plateau or decline in the near term."
+#         )
+
+#     with t5:
+#         csv_path = FORECAST_DIR / "forecast.csv"
+#         if csv_path.exists():
+#             fdf = pd.read_csv(csv_path)
+#             col_f1, col_f2, col_f3 = st.columns(3)
+#             with col_f1:
+#                 step_filter = st.selectbox("Step",
+#                     ["All"] + sorted(fdf["step"].unique().tolist()))
+#             with col_f2:
+#                 search_f = st.text_input("Search district", "", key="fc_search")
+#             with col_f3:
+#                 sort_f = st.selectbox("Sort by",
+#                     ["enrol_total", "bio_total", "enrol_minor_ratio", "enrol_adult_ratio"])
+
+#             disp_f = fdf.copy()
+#             if step_filter != "All":
+#                 disp_f = disp_f[disp_f["step"] == step_filter]
+#             if search_f:
+#                 disp_f = disp_f[disp_f["district"].str.contains(
+#                     search_f, case=False, na=False)]
+#             if sort_f in disp_f.columns:
+#                 disp_f = disp_f.sort_values(sort_f, ascending=False)
+
+#             st.dataframe(disp_f, hide_index=True, width='stretch')
+#             st.download_button(
+#                 "Download forecast.csv",
+#                 fdf.to_csv(index=False),
+#                 "forecast.csv", "text/csv"
+#             )
+
+#             # National summary table
+#             if summ_path.exists():
+#                 st.markdown("**National totals by step**")
+#                 st.dataframe(
+#                     pd.read_csv(summ_path).round(3),
+#                     hide_index=True, width='stretch'
+#                 )
+#         else:
+#             st.warning("forecast.csv not found.")
