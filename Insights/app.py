@@ -1472,6 +1472,7 @@ elif page == "Tensor Decomposition":
     ])
  
     is_bio = (tensor_name == "Biometric Tensor")
+    is_enrol = (tensor_name == "Enrolment Tensor")
  
     BIO_INTERP_CSS = """
     <style>
@@ -1570,6 +1571,78 @@ elif page == "Tensor Decomposition":
                 <b>Key takeaway:</b> The time axis is dominated by Component 1's batch-upload rhythm.
                 All other components are temporally stable, meaning the geographic and demographic
                 patterns they capture hold consistently across the entire study period.
+            </div>
+            </div>
+            """, unsafe_allow_html=True)
+ 
+        if is_enrol:
+            st.markdown(BIO_INTERP_CSS, unsafe_allow_html=True)
+            st.markdown("<div class='interp-section'>", unsafe_allow_html=True)
+            st.markdown("<div class='interp-header'>📅 How to Read the Time Factors Plot — Enrolment Tensor</div>", unsafe_allow_html=True)
+            st.markdown("""
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge'>Component 1</span>
+                    <span class='comp-title'>Monthly batch spikes — Mar to Jul 2025, then persistent activity</span>
+                </div>
+                <div class='comp-body'>
+                    Component 1 shows sharp peaks every ~4 weeks from March through July 2025 (reaching ~180 in July),
+                    then transitions into a sustained elevated plateau from September onward (~40–70).
+                    Unlike the biometric tensor which went quiet after July, enrolment C1 stays active —
+                    indicating <b>continued bulk enrolment pushes in the second half of 2025</b>,
+                    possibly driven by government campaigns or school-year registration drives.
+                </div>
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge' style='background:#d97706;'>Component 2</span>
+                    <span class='comp-title'>Intermittent spikes — co-occurs with C1 bursts</span>
+                </div>
+                <div class='comp-body'>
+                    Component 2 spikes alongside C1 in April, May, and July (reaching ~30–45), then
+                    flattens for the rest of the year. This component captures a <b>secondary enrolment
+                    wave</b> tied to the same batch events but affecting a different demographic group
+                    (adult-heavy districts — see feature patterns). The two components share the same
+                    temporal trigger but different geographic and age-group signatures.
+                </div>
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge' style='background:#059669;'>Component 3</span>
+                    <span class='comp-title'>Stable negative baseline throughout</span>
+                </div>
+                <div class='comp-body'>
+                    Flat at approximately −13 across all 45 weeks. This is a <b>constant background offset</b>
+                    used by the decomposition to balance the tensor — not a real decline. Its signal
+                    lives in the district and feature dimensions (minor ratio districts).
+                </div>
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge' style='background:#7c3aed;'>Component 4</span>
+                    <span class='comp-title'>Steady positive baseline (~9)</span>
+                </div>
+                <div class='comp-body'>
+                    Runs at a constant ~9 throughout the year with no spikes. Together with C3, this
+                    component forms the <b>steady-state enrolment background</b> — districts that enrol
+                    consistently every week rather than in batches, driven primarily by adult ratio dynamics.
+                </div>
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge' style='background:#dc2626;'>Components 5, 6, 7</span>
+                    <span class='comp-title'>Near-zero — spatial/demographic signal only</span>
+                </div>
+                <div class='comp-body'>
+                    These components are temporally flat near zero. Their entire signal resides in
+                    <b>which districts and which features</b> they load on — not when.
+                    C5 in particular carries a strong district-level signal (West Bengal mega-districts).
+                </div>
+            </div>
+            <div class='interp-note'>
+                <b>Key takeaway:</b> Enrolment time factors show a richer temporal story than biometric —
+                two components (C1 and C2) spike together in batch months, C4 provides a steady baseline,
+                and C3 is a stable offset. The July 2025 peak is the strongest event in the entire dataset.
             </div>
             </div>
             """, unsafe_allow_html=True)
@@ -1673,6 +1746,92 @@ elif page == "Tensor Decomposition":
             </div>
             """, unsafe_allow_html=True)
  
+        if is_enrol:
+            st.markdown(BIO_INTERP_CSS, unsafe_allow_html=True)
+            st.markdown("<div class='interp-section'>", unsafe_allow_html=True)
+            st.markdown("<div class='interp-header'>🗺️ How to Read the District Heatmap — Enrolment Tensor</div>", unsafe_allow_html=True)
+            st.markdown("""
+            <div class='interp-note' style='margin-bottom:1rem;'>
+                <b>Reading tip:</b> Components 1–5 appear uniform/dark purple while Component 6 blazes
+                bright. This is a <b>scale effect</b> — C6 loadings reach millions (e.g. Pashchim Champaran: 3.16M)
+                because it reflects raw enrolment volumes. Components 1–5 capture proportional/ratio
+                signals and are equally real despite smaller numbers.
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge'>C1</span>
+                    <span class='comp-title'>Bihar-led child enrolment volume</span>
+                </div>
+                <div class='comp-body'>Top districts: Pashchim Champaran, Gaya, Patna, Muzaffarpur, Bhagalpur, Madhubani.
+                Heavily Bihar-concentrated with UP and Hyderabad also present. This component captures
+                districts with large absolute counts of <b>child and minor enrolments (age_5_17 dominant)</b>
+                — Bihar's high fertility and child population make it dominant here.</div>
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge' style='background:#d97706;'>C2</span>
+                    <span class='comp-title'>Meghalaya adult enrolment burst</span>
+                </div>
+                <div class='comp-body'>Top districts: East Khasi Hills (2.13), West Khasi Hills (1.17), West Garo Hills (1.10), Ri Bhoi —
+                all Meghalaya, plus Assam's Golaghat and Tinsukia. Loadings are strikingly high and geography-specific.
+                This captures a <b>concentrated adult-age (18+) enrolment surge</b> in Meghalaya districts,
+                possibly a state-level Aadhaar drive targeting adults during the batch months.</div>
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge' style='background:#059669;'>C3</span>
+                    <span class='comp-title'>Minor ratio — geographically diffuse UP/Maharashtra pattern</span>
+                </div>
+                <div class='comp-body'>Top districts: Purba Champaran, Nashik, Hardoi, Varanasi, Gorakhpur, Amritsar.
+                A spread-out pattern across large northern cities and UP districts.
+                Driven by <b>enrol_minor_ratio</b> — districts where minors form a disproportionately
+                large share of all Aadhaar enrolments in a given week.</div>
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge' style='background:#7c3aed;'>C4</span>
+                    <span class='comp-title'>Adult ratio anomaly — Meghalaya + Assam + Punjab</span>
+                </div>
+                <div class='comp-body'>Top districts: West Khasi Hills, Ri Bhoi, Dibrugarh, Sivasagar, East Khasi Hills, Kapurthala, Kullu.
+                Meghalaya and Assam districts again, now with Punjab and HP additions.
+                Driven by <b>enrol_adult_ratio (2.45)</b> — districts where adults dominate the weekly
+                enrolment mix. This is the adult counterpart of C3's minor-ratio signal.</div>
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge' style='background:#dc2626;'>C5</span>
+                    <span class='comp-title'>West Bengal mega-district under-5 surge</span>
+                </div>
+                <div class='comp-body'>Top districts: Murshidabad (5.0), South 24 Parganas (4.33), North 24 Parganas (3.70),
+                Pune, Mumbai, Hyderabad, Jaipur. A mix of West Bengal's densely populated districts
+                and major metros. Driven by <b>age_0_5 (0.71)</b> — infant and toddler Aadhaar enrolments.
+                Murshidabad's dominant loading (5.0) is notable — it has India's highest Muslim-minority
+                population density and high birth rates, explaining outsized under-5 enrolment.</div>
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge' style='background:#0891b2;'>C6</span>
+                    <span class='comp-title'>Absolute enrolment volume — population size effect ⚠️</span>
+                </div>
+                <div class='comp-body'>Top districts: Pashchim Champaran (3.16M), Hyderabad (1.78M), Purba Champaran (1.53M),
+                Hardoi, Pune, Mumbai. Loadings in the <b>millions</b> — this component purely reflects
+                total population size. Interpret as a normalisation artifact: districts appear here because
+                they are large, not because of any distinctive demographic pattern. Always control for
+                population when interpreting C6.</div>
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge' style='background:#65a30d;'>C7</span>
+                    <span class='comp-title'>Uniform minor ratio — pan-India background</span>
+                </div>
+                <div class='comp-body'>Top districts: Agra, Virudunagar, Tumkur, Bagalkot, Thoothukkudi, Thiruvarur —
+                all with <b>identical loading of 0.321</b>. This is a flat, pan-India component with no
+                geographic clustering. It likely captures a baseline minor-ratio floor that is common
+                across most districts, acting as a global intercept for <b>enrol_minor_ratio</b>.</div>
+            </div>
+            </div>
+            """, unsafe_allow_html=True)
+ 
     with tabs[2]:
         img_path = tensor_dir / "feature_component_heatmap.png"
         if img_path.exists():
@@ -1770,6 +1929,91 @@ elif page == "Tensor Decomposition":
             </div>
             """, unsafe_allow_html=True)
  
+        if is_enrol:
+            st.markdown(BIO_INTERP_CSS, unsafe_allow_html=True)
+            st.markdown("<div class='interp-section'>", unsafe_allow_html=True)
+            st.markdown("<div class='interp-header'>📊 How to Read the Feature Heatmap — Enrolment Tensor</div>", unsafe_allow_html=True)
+            st.markdown("""
+            <div class='interp-note' style='margin-bottom:1rem;'>
+                <b>Reading tip:</b> Bright yellow = large positive loading (feature defines the component).
+                Dark purple = large negative loading (inverse relationship). Component 6's yellow band
+                and Component 4's deep purple on <b>enrol_adult_ratio</b> are the two most visually striking
+                signals in this heatmap.
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge'>C1</span>
+                    <span class='comp-title'>Child count dominant — age_5_17 (0.58), enrol_total (0.50)</span>
+                </div>
+                <div class='comp-body'>The three absolute count features load positively with age_5_17 leading.
+                Ratio features are near zero. This component identifies districts by <b>how many
+                school-age children are being enrolled</b> — a pure volume signal.</div>
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge' style='background:#d97706;'>C2</span>
+                    <span class='comp-title'>age_18_greater dominant (0.73)</span>
+                </div>
+                <div class='comp-body'>Adult enrolments are the single strongest feature driver (0.73),
+                with age_5_17 secondary (0.33). This component captures districts where
+                <b>adult enrolments dominate the weekly mix</b> — the Meghalaya surge districts
+                are adult-registration campaigns.</div>
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge' style='background:#059669;'>C3</span>
+                    <span class='comp-title'>enrol_minor_ratio (1.38) — minors as share of weekly total</span>
+                </div>
+                <div class='comp-body'>The ratio of minors in total weekly enrolments is the dominant driver (1.38),
+                with enrol_adult_ratio inversely contributing (−0.51). This component measures
+                <b>whether a district's weekly enrolments are minor-heavy or adult-heavy</b> —
+                districts with strong minor ratio scores are child-enrolment weeks.</div>
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge' style='background:#7c3aed;'>C4</span>
+                    <span class='comp-title'>enrol_adult_ratio (2.45) — the darkest cell in the matrix</span>
+                </div>
+                <div class='comp-body'>The deep purple on enrol_adult_ratio (−2.45 when viewed as signed) is
+                the strongest feature signal in the entire enrolment decomposition. Districts loading
+                high on C4 have <b>extremely adult-skewed enrolment ratios</b> in specific weeks.
+                This is the adult-ratio counterpart to C3's minor-ratio signal — they form a
+                minor vs. adult dichotomy.</div>
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge' style='background:#dc2626;'>C5</span>
+                    <span class='comp-title'>age_0_5 (0.71) — under-5 infant enrolments</span>
+                </div>
+                <div class='comp-body'>Infant enrolments (age_0_5) are the top feature at 0.71, followed
+                by enrol_total (0.56). This component picks up districts where
+                <b>toddler and infant Aadhaar enrolments are disproportionately high</b> —
+                likely driven by birth registration drives in high-fertility districts like Murshidabad.</div>
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge' style='background:#0891b2;'>C6</span>
+                    <span class='comp-title'>All count features large — enrol_total (3.42), age_5_17 (3.37), age_0_5 (3.03)</span>
+                </div>
+                <div class='comp-body'>The bright yellow band. Every absolute count feature loads at 1–3.4,
+                reflecting raw population size. This is the <b>pure volume component</b> — districts
+                appear here because they are large. Ratio features are negligible (~0.05 and 0.007),
+                confirming this is a headcount, not a composition, signal.</div>
+            </div>
+            <div class='interp-card'>
+                <div class='interp-card-header'>
+                    <span class='comp-badge' style='background:#65a30d;'>C7</span>
+                    <span class='comp-title'>enrol_minor_ratio (1.47) — second minor-ratio component</span>
+                </div>
+                <div class='comp-body'>Similar to C3 in that enrol_minor_ratio dominates (1.47), but with
+                enrol_adult_ratio also positive (0.34) rather than negative. This captures a
+                <b>different mix of districts where minor enrolments are high</b> — the identical
+                0.321 loading across dozens of districts in the district factor suggests a
+                broadly distributed background floor.</div>
+            </div>
+            </div>
+            """, unsafe_allow_html=True)
+ 
     with tabs[3]:
         file_path = tensor_dir / "top_districts_by_component.csv"
         if file_path.exists():
@@ -1803,6 +2047,37 @@ elif page == "Tensor Decomposition":
                 The remaining 31.5% is noise or fine-grained district-level variation not captured by
                 these 7 latent patterns. The 7 components together describe the main demographic axes
                 along which Indian districts differ in their Aadhaar biometric enrollment profiles.
+            </div>
+            </div>
+            """, unsafe_allow_html=True)
+ 
+        if is_enrol:
+            st.markdown(BIO_INTERP_CSS, unsafe_allow_html=True)
+            st.markdown("<div class='interp-section'>", unsafe_allow_html=True)
+            st.markdown("<div class='interp-header'>🏆 Component Summary — Enrolment Tensor</div>", unsafe_allow_html=True)
+            st.markdown("""
+            <div class='interp-card'>
+                <div class='comp-meta'>
+                    <div class='comp-meta-item'><b>C1 — Bihar child volume</b><br>Pashchim Champaran · Gaya · Patna<br>Driven by: age_5_17, enrol_total</div>
+                    <div class='comp-meta-item'><b>C2 — Meghalaya adult surge</b><br>East Khasi Hills · West Khasi Hills · Ri Bhoi<br>Driven by: age_18_greater</div>
+                    <div class='comp-meta-item'><b>C3 — Minor ratio pattern (UP/MH)</b><br>Purba Champaran · Nashik · Hardoi<br>Driven by: enrol_minor_ratio</div>
+                    <div class='comp-meta-item'><b>C4 — Adult ratio anomaly (NE+PB)</b><br>West Khasi Hills · Dibrugarh · Kapurthala<br>Driven by: enrol_adult_ratio</div>
+                </div>
+            </div>
+            <div class='interp-card'>
+                <div class='comp-meta'>
+                    <div class='comp-meta-item'><b>C5 — WB infant enrolments</b><br>Murshidabad · S24P · N24P<br>Driven by: age_0_5</div>
+                    <div class='comp-meta-item'><b>C6 — Population size effect ⚠️</b><br>Pashchim Champaran · Hyderabad · Pune<br>Driven by: raw headcount (millions)</div>
+                    <div class='comp-meta-item'><b>C7 — Pan-India minor ratio floor</b><br>Uniform 0.321 loading across districts<br>Driven by: enrol_minor_ratio (background)</div>
+                </div>
+            </div>
+            <div class='interp-note'>
+                <b>Overall fit:</b> The enrolment decomposition captures <b>65.8%</b> of the tensor's variance at rank 7
+                (reconstruction error 34.2%) — slightly lower than the biometric tensor's 68.5%.
+                The additional unexplained variance likely comes from irregular state-level drives that
+                don't follow a clean latent pattern. Together, the 7 components reveal that enrolment
+                is structured by <b>age group mix</b> (children vs. adults), <b>geography</b> (Bihar, Meghalaya, West Bengal clusters),
+                and <b>batch timing</b> — not a single uniform national trend.
             </div>
             </div>
             """, unsafe_allow_html=True)
