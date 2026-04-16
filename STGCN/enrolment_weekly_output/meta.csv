@@ -1,0 +1,6 @@
+,0
+target_column,enrol_total
+shape,"(78, 30, 6)"
+num_weeks,78
+num_districts,30
+num_features,6

@@ -6,3 +6,5 @@ database/reports/
 database/*.duckdb
 adjacency_output/unmatched**.log
 env/
+NEW_STGCN/
+STCGN/

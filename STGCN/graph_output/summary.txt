@@ -1,0 +1,42 @@
+============================================================
+DISTRICT GRAPH BUILD SUMMARY
+============================================================
+Matched districts (N): 30
+Unmatched DB districts: 0
+alpha               : 0.7
+sigma2              : 0.5
+epsilon             : 0.05
+
+Similarity profile features:
+  - bio_total_mean
+  - bio_total_std
+  - bio_age5_ratio_mean
+  - bio_age17_ratio_mean
+  - bio_dependency_mean
+  - enrol_total_mean
+  - enrol_total_std
+  - enrol_minor_ratio_mean
+  - enrol_adult_ratio_mean
+
+W_distance:
+  Non-zero entries : 870
+  Sparsity         : 3.33%
+  Max weight       : 0.9971
+
+W_similarity:
+  Non-zero entries : 386
+  Sparsity         : 57.11%
+  Max weight       : 1.0000
+
+W_combined:
+  Non-zero entries : 870
+  Sparsity         : 3.33%
+  Max weight       : 0.9711
+
+Outputs:
+  graph_output/W_distance.csv
+  graph_output/W_similarity.csv
+  graph_output/W_combined.csv
+  graph_output/L_normalised_laplacian.csv
+  graph_output/district_order.csv
+  graph_output/district_mapping.csv

@@ -36,9 +36,12 @@ STATE_DIR      = Path("state_output")
 TIMESERIES_DIR = Path("timeseries_output")
 SPATIAL_DIR    = Path("spatial_output")
 TABLE_DIR  = Path("table_output")
-STGCN_BASE_DIR     = Path("..") / "NEW_STGCN"
-BIO_MODEL_DIR = Path("../NEW_STGCN/biometric_model_output")
-ENROL_MODEL_DIR = Path("../NEW_STGCN/enrolment_model_output")
+# STGCN_BASE_DIR     = Path("..") / "NEW_STGCN"
+# BIO_MODEL_DIR = Path("../NEW_STGCN/biometric_model_output")
+# ENROL_MODEL_DIR = Path("../NEW_STGCN/enrolment_model_output")
+STGCN_BASE_DIR     = Path("..") / "STGCN"
+BIO_MODEL_DIR = Path("../STGCN/biometric_model_output")
+ENROL_MODEL_DIR = Path("../STGCN/enrolment_model_output")
 # FORECAST_DIR  = Path("forecast_output")
 TENSOR_DIR = Path("tensor_output")
 
@@ -1146,7 +1149,7 @@ elif page == "STGCN Results":
     <div class='section-title'>STGCN Results</div>
     <div class='section-sub'>
         Weekly district-level forecasting results loaded from the separate
-        biometric and enrolment STGCN model folders in <code>../NEW_STGCN</code>
+        biometric and enrolment STGCN model folders in <code>../STGCN</code>
     </div>
     """, unsafe_allow_html=True)
 

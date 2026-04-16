@@ -1,4 +1,4 @@
-python build_district_graph.py  --shp ../Adjacency_marix/2011_Dist.shp ^--db ../database/aadhar.duckdb ^--alpha 0.5 ^--sigma2 0.1 ^--epsilon 0.1
+python build_district_graph.py  --shp ../Adjacency_marix/2011_Dist.shp ^--db ../database/aadhar.duckdb ^--sigma2 0.1 ^--epsilon 0.5
 python build_biometric_weekly_tensor.py
 python build_enrolment_weekly_tensor.py
 
@@ -25,3 +25,5 @@ python train_stgcn.py ^
   --t_in 8 --t_out 1 --k 3 --kt 2 ^
   --c_spatial 8 --c_out 32 ^
   --dropout 0.2 --batch_size 4 --epochs 120 --lr 0.001
+
+python build_district_graph.py --shp districts.geojson --db ../database/aadhar.duckdb --alpha 0.7 --sigma2 0.5 --epsilon 0.05

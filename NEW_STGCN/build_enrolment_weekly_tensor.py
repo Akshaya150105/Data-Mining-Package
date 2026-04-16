@@ -47,6 +47,31 @@ def fetch_enrolment_weekly(con):
     return con.execute(sql).fetchdf()
 
 
+# def build_full_grid(df, districts):
+#     df["week_start"] = pd.to_datetime(df["week_start"])
+#     weeks = pd.date_range(df["week_start"].min(), df["week_start"].max(), freq="W-MON")
+
+#     full_index = pd.MultiIndex.from_product(
+#         [weeks, districts], names=["week_start", "district"]
+#     )
+
+#     df = df.set_index(["week_start", "district"]).reindex(full_index).reset_index()
+
+#     count_cols = ["enrol_total", "age_0_5", "age_5_17", "age_18_greater"]
+#     ratio_cols = ["enrol_minor_ratio", "enrol_adult_ratio"]
+
+#     for col in count_cols:
+#         df[col] = df[col].fillna(0.0)
+
+#     for col in ratio_cols:
+#         df[col] = (
+#             df.groupby("district")[col]
+#             .transform(lambda s: s.interpolate(limit_direction="both"))
+#             .fillna(0.0)
+#         )
+
+#     return df, weeks
+
 def build_full_grid(df, districts):
     df["week_start"] = pd.to_datetime(df["week_start"])
     weeks = pd.date_range(df["week_start"].min(), df["week_start"].max(), freq="W-MON")
@@ -60,13 +85,23 @@ def build_full_grid(df, districts):
     count_cols = ["enrol_total", "age_0_5", "age_5_17", "age_18_greater"]
     ratio_cols = ["enrol_minor_ratio", "enrol_adult_ratio"]
 
+    # Fill missing count values using:
+    # avg(previous, next) if both exist
+    # previous if only previous exists
+    # next if only next exists
+    # 0 only if no surrounding values exist
     for col in count_cols:
-        df[col] = df[col].fillna(0.0)
+        df[col] = (
+            df.groupby("district")[col]
+            .transform(lambda s: s.interpolate(method="linear", limit_direction="both"))
+            .fillna(0.0)
+        )
 
+    # Same logic for ratio columns
     for col in ratio_cols:
         df[col] = (
             df.groupby("district")[col]
-            .transform(lambda s: s.interpolate(limit_direction="both"))
+            .transform(lambda s: s.interpolate(method="linear", limit_direction="both"))
             .fillna(0.0)
         )
 
