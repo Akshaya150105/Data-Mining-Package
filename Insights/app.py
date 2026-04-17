@@ -1106,7 +1106,7 @@ elif page == "District Deep-Dive":
         for sp in ["top","right"]: ax2.spines[sp].set_visible(False)
         for sp in ["bottom","left"]: ax2.spines[sp].set_color("#e5e7eb")
         ax2.grid(True, axis="y", color="#f0f0f0")
-        plt.tight_layout()
+        # plt.tight_layout()
         buf = io.BytesIO()
         plt.savefig(buf, format="png", dpi=150, bbox_inches="tight", facecolor=BG)
         plt.close(); buf.seek(0)
@@ -1295,7 +1295,7 @@ elif page == "STGCN Results":
             st.image(str(loss_path), width='stretch')
             st.markdown("</div>", unsafe_allow_html=True)
             note(
-                "Purple is the training loss and green is the validation loss. "
+                "Blue is the training loss and Orange is the validation loss. "
                 "The validation curve is the key one to watch: when it stops improving, the model has extracted most of the useful signal from the weekly sequences."
             )
         else:
